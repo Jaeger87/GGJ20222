@@ -29,7 +29,7 @@ public class EnemyController : MonoBehaviour
     private bool m_bIsMovingOnStairs = false;
 
     private Vector3 m_ObjectivePosition = Vector3.zero;
-
+    
     private Vector3 m_TargetStairDirection;
     private PhotonView m_PhotonView;
 
@@ -163,7 +163,6 @@ public class EnemyController : MonoBehaviour
         Vector2 LocalPosition = diePosition;
         LocalPosition.x *= -1f;
         transform.localPosition = LocalPosition;
-        m_TargetStairPosition = Vector2.zero;
         m_TargetStairDirection = Vector3.zero;
         m_bIsMovingOnStairs = false;
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
