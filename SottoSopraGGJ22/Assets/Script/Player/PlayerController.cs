@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer Graphics;
 
     [SerializeField]
+    private PlayerHitHintController HitHintController;
+    
+    [SerializeField]
     private UIPage_PlayerGame PlayerInGameUI;
     
     [SerializeField]
@@ -86,6 +89,7 @@ public class PlayerController : MonoBehaviour
         if (m_PhotonView != null && !m_PhotonView.IsMine)
         {
             m_PlayerMovement.SetAsNetworkPlayer();
+            SetDashHintActive(false);
         }
     }
 
@@ -94,5 +98,10 @@ public class PlayerController : MonoBehaviour
         Vector3 scale = Graphics.transform.localScale;
         scale.x *= -1f;
         Graphics.transform.localScale = scale;
+    }
+
+    public void SetDashHintActive(bool i_bActive)
+    {
+        HitHintController.gameObject.SetActive(i_bActive);
     }
 }
