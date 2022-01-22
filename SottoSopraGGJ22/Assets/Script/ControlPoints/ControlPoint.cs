@@ -4,33 +4,19 @@ using UnityEngine;
 
 public class ControlPoint : MonoBehaviour
 {
-    private ControlPointEventHandler ControlPointEH = null;
+    private MatchManager MatchManager = null;
+    [SerializeField] private ETeam i_Team;
 
     private void Start()
     {
-        GetEventHandler();
-    }
-
-    private void GetEventHandler()
-    {
-        ControlPointEH = FindObjectOfType<ControlPointEventHandler>();
-        if (ControlPointEH != null)
-        {
-            ControlPointEH.ControlPointEvent.AddListener(ControlPointAttacked);
-        }
-
-    }
-
-    private void ControlPointAttacked()
-    {
-        Debug.Log("Control Point Attacked");
+        MatchManager = FindObjectOfType<MatchManager>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            ControlPointEH.ControlPointEvent.Invoke();
+            MatchManager.GameEnded(i_Team);
         }
     }
 }

@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 228963085}
   - component: {fileID: 228963084}
   m_Layer: 0
-  m_Name: EventHandler
+  m_Name: MatchManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,12 +149,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 228963083}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8887f15d4d79f747a686ad1739b6ec8, type: 3}
+  m_Script: {fileID: 11500000, guid: 07aaa36c3a26d8f44b6e506944d57cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ControlPointEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!4 &228963085
 Transform:
   m_ObjectHideFlags: 0
