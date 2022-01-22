@@ -346,6 +346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8167a1f674413154fb660b5dbe0f6dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Graphics: {fileID: 1387888655}
   MovementSpeed: 8
   AirMovementSpeed: 6
   JumpForce: 8

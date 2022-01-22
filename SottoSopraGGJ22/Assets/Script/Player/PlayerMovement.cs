@@ -1,8 +1,10 @@
-using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject Graphics = null;
+    
     [SerializeField]
     private float MovementSpeed = 10f;
     
@@ -33,10 +35,14 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bHasFrontWall = false;
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
+    private bool m_bLookingRight = true;
     
     private bool m_bIsJumping = false;
     private float m_TargetMovementSpeed = 0f;
 
+    private Vector2 m_GroundCheckSize = new Vector2(0.4f, 0.1f);
+    private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
+    private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private void Awake()
     {
@@ -59,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") > 0f;
+        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") < 0f;
 
         if (dash)
         {
@@ -71,6 +77,21 @@ public class PlayerMovement : MonoBehaviour
     private void CheckMovement()
     {
         m_TargetMovementSpeed = Input.GetAxis("Horizontal") * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
+        float sign = Mathf.Sign(m_TargetMovementSpeed);
+
+        if (m_TargetMovementSpeed != 0)
+        {
+            if (m_bLookingRight && sign < 0)
+            {
+                Flip();
+            }
+
+            if (!m_bLookingRight && sign > 0)
+            {
+                Flip();
+            }
+        }
+        
         if (m_bHasFrontWall && m_TargetMovementSpeed > 0f)
         {
             m_TargetMovementSpeed = 0f;
@@ -82,9 +103,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void Flip()
+    {
+        Vector3 scale = Graphics.transform.localScale;
+        scale.x *= -1f;
+        Graphics.transform.localScale = scale;
+
+        m_bLookingRight = !m_bLookingRight;
+    }
+
     private void CheckJump()
     {
-        bool jump = !m_bIsJumping && Input.GetAxis("Vertical") > 0.1f;
+        bool jump = !m_bIsJumping && Input.GetAxis("Jump") > 0.1f;
         
         if (m_bIsJumping && m_Rigidbody.velocity.y < 0)
         {
@@ -104,7 +134,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (FloorCheck != null)
         {
-            if(Physics2D.OverlapBox(FloorCheck.position, new Vector2(0.5f, 0.1f), 0, FloorMask))
+            if(Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask))
             {
                 m_bIsGrounded = true;
             }
@@ -117,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (FrontWallCheck != null)
         {
-            if(Physics2D.OverlapBox(FrontWallCheck.position, new Vector2(0.1f, 0.5f), 0, FloorMask))
+            if(Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, FloorMask))
             {
                 m_bHasFrontWall = true;
             }
@@ -129,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (BackWallCheck != null)
         {
-            if(Physics2D.OverlapBox(BackWallCheck.position, new Vector2(0.1f, 0.5f), 0, FloorMask))
+            if(Physics2D.OverlapBox(BackWallCheck.position, m_BackWallCheckSize, 0, FloorMask))
             {
                 m_bHasBackWall = true;
             }
@@ -157,5 +187,12 @@ public class PlayerMovement : MonoBehaviour
         float targetSpeed = Mathf.Lerp(currentSpeed, m_TargetMovementSpeed, 0.2f);
 
         return targetSpeed;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(FloorCheck.position, m_GroundCheckSize);
+        Gizmos.DrawWireCube(BackWallCheck.position, m_BackWallCheckSize);
+        Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
     }
 }
