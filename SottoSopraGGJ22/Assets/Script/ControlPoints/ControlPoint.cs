@@ -6,6 +6,7 @@ public class ControlPoint : MonoBehaviour
 {
     private MatchManager MatchManager = null;
     [SerializeField] private ETeam i_Team;
+    [SerializeField] private int life = 0;
 
     private void Start()
     {
@@ -16,7 +17,13 @@ public class ControlPoint : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            MatchManager.GameEnded(i_Team);
+            //todo: Qui bisogna uccidere il nemico
+            life--;
+            if (life <= 0)
+            {
+                MatchManager.GameEnded(i_Team);
+            }
+            //todo: pensare anche a roba grafica
         }
     }
 }

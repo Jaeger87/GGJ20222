@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class SpawnPlayers : MonoBehaviour
+public class SpawnManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject PlayerPrefab;
@@ -11,6 +11,12 @@ public class SpawnPlayers : MonoBehaviour
     
     [SerializeField]
     private Transform Team2SpawnPoint;
+    
+    [SerializeField]
+    private Transform Enemy1SpawnPoint;
+    
+    [SerializeField]
+    private Transform Enemy2SpawnPoint;
 
     private void Awake()
     {
@@ -26,5 +32,13 @@ public class SpawnPlayers : MonoBehaviour
             GameObject Player = PhotonNetwork.Instantiate("Player/" + PlayerPrefab.name, Team2SpawnPoint.position, Quaternion.identity);
             Player.GetComponent<PlayerController>().SetTeam(ETeam.Team2);
         }
+    }
+
+    public void SpawnEnemy()
+    {
+        //GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy1SpawnPoint.position, Quaternion.identity);
+        //GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy2SpawnPoint.position, Quaternion.identity);
+        
+        //Qui settare cose sui nemici
     }
 }
