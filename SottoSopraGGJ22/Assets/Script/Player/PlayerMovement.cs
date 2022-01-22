@@ -1,6 +1,7 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPunObservable
 {
     [SerializeField]
     private PlayerDamage PlayerDamage;
@@ -50,7 +51,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private PlayerController m_Controller = null;
-    
+
+    // Booleani network
+    private bool m_bNetworkPlayer = false;
+    private bool m_bvaluesReceived = false;
+
     private bool DashAvailable => !m_bIsGrounded && m_JumpDeltaTime > DashDeltaTime;
 
     private void Awake()
@@ -60,20 +65,28 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    public void SetAsNetworkPlayer()
+    {
+        m_bNetworkPlayer = true;
+    }
+    
     private void Update()
     {
-        CheckMovement();
-        CheckGround();
-        CheckJump();
-        CheckDash();
-
-        m_Controller.SetDashHintActive(DashAvailable);
-
-        if (m_bIsDashing)
+        if (!m_bNetworkPlayer)
         {
-            if (PlayerDamage.CheckHit())
+            CheckMovement();
+            CheckGround();
+            CheckJump();
+            CheckDash();
+            
+            m_Controller.SetDashHintActive(DashAvailable);
+
+            if (m_bIsDashing)
             {
-                OnHit();
+                if (PlayerDamage.CheckHit())
+                {
+                    OnHit();
+                }
             }
         }
     }
@@ -82,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
     {
         print("Player should hit");
     }
-
+    
     private void CheckDash()
     {
         if (!m_bHasDash)
@@ -94,11 +107,26 @@ public class PlayerMovement : MonoBehaviour
 
         if (dash)
         {
-            m_bHasDash = false;
-            m_bIsDashing = true;
-            // m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
-            m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, -DashForce);
+            AddDashToRigidBody();
+            m_Controller.SendDash();
         }
+    }
+    
+    public void AddJumpToRigidBody()
+    {
+        m_bIsGrounded = false;
+        m_bIsJumping = true;
+        m_bvaluesReceived = true;
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+    }
+    
+    public void AddDashToRigidBody()
+    {
+        m_bHasDash = false;
+        m_bIsDashing = true;
+        m_bvaluesReceived = true;
+        // m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, -DashForce);
     }
 
     private void CheckMovement()
@@ -148,9 +176,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (jump && m_bIsGrounded)
         {
-            m_bIsGrounded = false;
-            m_bIsJumping = true;
-            m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+            AddJumpToRigidBody();
         }
     }
 
@@ -203,8 +229,9 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        
-        m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
+        if(!m_bvaluesReceived)
+            m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
+        m_bvaluesReceived = false;
     }
 
     private float GetMovementForce()
@@ -221,5 +248,19 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireCube(FloorCheck.position, m_GroundCheckSize);
         Gizmos.DrawWireCube(BackWallCheck.position, m_BackWallCheckSize);
         Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(m_Rigidbody.velocity);
+        }
+        else
+        {
+            //Network player, receive data
+            m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
+            m_bvaluesReceived = true;
+        }
     }
 }
