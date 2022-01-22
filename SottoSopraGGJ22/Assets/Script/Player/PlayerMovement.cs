@@ -43,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
 
     private PlayerController m_Controller = null;
 
+    private bool m_bNetworkPlayer = false;
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
@@ -50,12 +52,21 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    public void SetAsNetworkPlayer()
+    {
+        m_bNetworkPlayer = true;
+    }
+    
     private void Update()
     {
-        CheckMovement();
-        CheckGround();
-        CheckJump();
-        CheckDash();
+        if (!m_bNetworkPlayer)
+        {
+            CheckMovement();
+            CheckGround();
+            CheckJump();
+            CheckDash();
+        }
+        
     }
 
     private void CheckDash()
@@ -69,9 +80,23 @@ public class PlayerMovement : MonoBehaviour
 
         if (dash)
         {
-            m_bHasDash = false;
-            m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+            AddDashToRigidBody();
+            
+            m_Controller.SendDash();
         }
+    }
+
+    public void AddDashToRigidBody()
+    {
+        m_bHasDash = false;
+        m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+    }
+    
+    public void AddJumpToRigidBody()
+    {
+        m_bIsGrounded = false;
+        m_bIsJumping = true;
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
     }
 
     private void CheckMovement()
@@ -121,9 +146,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (jump && m_bIsGrounded)
         {
-            m_bIsGrounded = false;
-            m_bIsJumping = true;
-            m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+            AddJumpToRigidBody();
         }
     }
 
