@@ -6,6 +6,8 @@ TagManager:
   tags:
   - ControlPoint
   - Enemy
+  - ControlPoint_Team1
+  - ControlPoint_Team2
   layers:
   - Default
   - TransparentFX
@@ -15,7 +17,7 @@ TagManager:
   - UI
   - Floor
   - Player
-  - 
+  - Stairs
   - 
   - ControlPoint
   - Enemy

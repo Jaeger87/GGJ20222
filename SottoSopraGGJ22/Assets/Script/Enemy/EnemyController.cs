@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -17,6 +15,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private LayerMask FloorMask;
 
+    private ETeam m_TargetTeam = ETeam.Team1;
+
     private Rigidbody2D m_Rigidbody;
     
     private Vector2 m_FallCheckSize = new Vector2(0.1f, 0.1f);
@@ -26,10 +26,27 @@ public class EnemyController : MonoBehaviour
     private bool m_bGonnaFall = true;
 
     private bool m_bLookingRight = true;
+    private bool m_bIsMovingOnStairs = false;
+
+    private Vector3 m_ObjectivePosition = Vector3.zero;
+
+    private Vector3 m_TargetStairPosition;
 
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
+
+        SearchObjective();
+    }
+
+    private void SearchObjective()
+    {
+        GameObject Objective = GameObject.FindWithTag($"ControlPoint_{m_TargetTeam}");
+
+        if (Objective != null)
+        {
+            m_ObjectivePosition = Objective.transform.position;
+        }
     }
 
     private void Update()
@@ -44,11 +61,19 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         if (m_Rigidbody == null)
         {
             return;
         }
 
+        m_Rigidbody.isKinematic = m_bIsMovingOnStairs;
+        
+        if (m_bIsMovingOnStairs)
+        {
+            return;
+        }
+        
         m_Rigidbody.velocity = new Vector2((m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed, m_Rigidbody.velocity.y);
     }
 
@@ -92,5 +117,52 @@ public class EnemyController : MonoBehaviour
     {
         Gizmos.DrawWireCube(FallCheck.position, m_FallCheckSize);
         Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
+    }
+
+    public void OnStairsEnter(Vector3 i_StartPoint, Vector3 i_EndPoint)
+    {
+        if (m_bIsMovingOnStairs)
+        {
+            return;
+        }
+        
+        float DistanceFromStartToObjective = Vector3.Distance(i_StartPoint, m_ObjectivePosition);
+        float DistanceFromEndToObjective = Vector3.Distance(i_EndPoint, m_ObjectivePosition);
+
+        if (DistanceFromStartToObjective < DistanceFromEndToObjective)
+        {
+            return;
+        }
+
+        
+        m_bIsMovingOnStairs = true;
+        m_Rigidbody.velocity = Vector2.zero;
+        
+        Vector3 LocalPosition = transform.localPosition;
+        LocalPosition.x = i_StartPoint.x;
+        transform.position = LocalPosition;
+
+        m_TargetStairPosition = i_EndPoint;
+
+        StartCoroutine(MoveToTargetPosition());
+    }
+
+    private IEnumerator MoveToTargetPosition()
+    {
+        while (Vector3.Distance(transform.position, m_TargetStairPosition) > 0.025f)
+        {
+            transform.position = Vector3.Lerp(transform.position, m_TargetStairPosition, 0.01f);
+            yield return new WaitForEndOfFrame();
+        }
+
+        m_bIsMovingOnStairs = false;
+    }
+
+    public void OnHit()
+    {
+        m_TargetStairPosition = Vector3.zero;
+        m_bIsMovingOnStairs = false;
+        m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        SearchObjective();
     }
 }
