@@ -10,6 +10,12 @@ public class PlayerController : MonoBehaviour
     private PlayerHitHintController HitHintController;
     
     [SerializeField]
+    private GameObject ArrowUpHint;
+    
+    [SerializeField]
+    private GameObject ArrowDownHint;
+    
+    [SerializeField]
     private UIPage_PlayerGame PlayerInGameUI;
     
     [SerializeField]
@@ -103,5 +109,15 @@ public class PlayerController : MonoBehaviour
     public void SetDashHintActive(bool i_bActive)
     {
         HitHintController.gameObject.SetActive(i_bActive);
+    }
+
+    public void OnCanJumpOverPlatform(bool i_bCanJump)
+    {
+        ArrowUpHint.SetActive(i_bCanJump);
+    }
+    
+    public void OnCanJumpDownPlatform(bool i_bCanJump)
+    {
+        ArrowDownHint.SetActive(i_bCanJump);
     }
 }
