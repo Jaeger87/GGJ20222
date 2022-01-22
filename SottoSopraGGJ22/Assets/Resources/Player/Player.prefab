@@ -53,6 +53,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ace9d0f86acf146b90b4020c123bdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Graphics: {fileID: 4204337852045232091}
+  Team1Graphics: {fileID: 21300000, guid: 027669b5d4c9a4e40a1252e269ca5252, type: 3}
+  Team2Graphics: {fileID: 21300000, guid: 5c67fc3fd83e4b349a00eaef2d0b7d49, type: 3}
 --- !u!114 &1896252832497512693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8167a1f674413154fb660b5dbe0f6dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Graphics: {fileID: 5796843557579792884}
   MovementSpeed: 8
   AirMovementSpeed: 6
   JumpForce: 8

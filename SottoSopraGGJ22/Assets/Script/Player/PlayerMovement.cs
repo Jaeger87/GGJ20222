@@ -3,9 +3,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
-    private GameObject Graphics = null;
-    
-    [SerializeField]
     private float MovementSpeed = 10f;
     
     [SerializeField]
@@ -44,9 +41,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
+    private PlayerController m_Controller = null;
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
+        m_Controller = GetComponent<PlayerController>();
     }
 
 
@@ -105,10 +105,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Flip()
     {
-        Vector3 scale = Graphics.transform.localScale;
-        scale.x *= -1f;
-        Graphics.transform.localScale = scale;
-
+        m_Controller.Flip();
         m_bLookingRight = !m_bLookingRight;
     }
 
