@@ -336,7 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514444acb30294a41a6f04c8e1ebf220, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 4905578585381678691, guid: ab4da0bf84c462740a0425712b4dfe94, type: 3}
+  PlayerPrefab: {fileID: 1896252832497512686, guid: ab4da0bf84c462740a0425712b4dfe94, type: 3}
   Team1SpawnPoint: {fileID: 2024916534}
   Team2SpawnPoint: {fileID: 170826164}
 --- !u!1 &2024916533

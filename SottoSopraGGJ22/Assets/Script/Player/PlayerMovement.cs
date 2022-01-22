@@ -1,9 +1,10 @@
-using System;
-using Photon.Pun;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject Graphics = null;
+    
     [SerializeField]
     private float MovementSpeed = 10f;
     
@@ -34,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bHasFrontWall = false;
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
+    private bool m_bLookingRight = true;
     
     private bool m_bIsJumping = false;
     private float m_TargetMovementSpeed = 0f;
@@ -75,6 +77,21 @@ public class PlayerMovement : MonoBehaviour
     private void CheckMovement()
     {
         m_TargetMovementSpeed = Input.GetAxis("Horizontal") * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
+        float sign = Mathf.Sign(m_TargetMovementSpeed);
+
+        if (m_TargetMovementSpeed != 0)
+        {
+            if (m_bLookingRight && sign < 0)
+            {
+                Flip();
+            }
+
+            if (!m_bLookingRight && sign > 0)
+            {
+                Flip();
+            }
+        }
+        
         if (m_bHasFrontWall && m_TargetMovementSpeed > 0f)
         {
             m_TargetMovementSpeed = 0f;
@@ -84,6 +101,15 @@ public class PlayerMovement : MonoBehaviour
         {
             m_TargetMovementSpeed = 0f;
         }
+    }
+
+    private void Flip()
+    {
+        Vector3 scale = Graphics.transform.localScale;
+        scale.x *= -1f;
+        Graphics.transform.localScale = scale;
+
+        m_bLookingRight = !m_bLookingRight;
     }
 
     private void CheckJump()
