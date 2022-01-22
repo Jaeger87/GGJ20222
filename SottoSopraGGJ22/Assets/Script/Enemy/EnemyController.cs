@@ -166,6 +166,10 @@ public class EnemyController : MonoBehaviour
         m_PhotonView.RPC("ChangeTeam", RpcTarget.AllBuffered, m_Rigidbody.position);
     }
 
+    public void Die()
+    {
+        PhotonNetwork.Destroy(this.gameObject);
+    }
     
     [PunRPC]
     public void ChangeTeam(Vector2 diePosition)
@@ -178,4 +182,6 @@ public class EnemyController : MonoBehaviour
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();
     }
+    
+    
 }

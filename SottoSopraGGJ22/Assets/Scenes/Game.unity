@@ -667,6 +667,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: ControlPoint_Team1
       objectReference: {fileID: 0}
+    - target: {fileID: 10847134878819807, guid: 98423dd7207acb444afb1016cd647949, type: 3}
+      propertyPath: life
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98423dd7207acb444afb1016cd647949, type: 3}
 --- !u!1001 &1162070142
@@ -785,6 +789,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: ControlPoint_Team1
       objectReference: {fileID: 0}
+    - target: {fileID: 10847134878819807, guid: 98423dd7207acb444afb1016cd647949, type: 3}
+      propertyPath: life
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98423dd7207acb444afb1016cd647949, type: 3}
 --- !u!1 &1397747508 stripped
@@ -844,55 +852,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1758093805
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1758093806}
-  - component: {fileID: 1758093807}
-  m_Layer: 0
-  m_Name: SpawnManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1758093806
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758093805}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.99304986, y: -0.14186561, z: -0.011230469}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1758093807
+--- !u!114 &1758093807 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+  m_PrefabInstance: {fileID: 4302738215652799128}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758093805}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 514444acb30294a41a6f04c8e1ebf220, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 1896252832497512686, guid: ab4da0bf84c462740a0425712b4dfe94, type: 3}
-  EnemyPrefab: {fileID: 3803102326549632334, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
-  Team1SpawnPoint: {fileID: 2024916534}
-  Team2SpawnPoint: {fileID: 170826164}
-  Enemy1SpawnPoint: {fileID: 723379021}
-  Enemy2SpawnPoint: {fileID: 1716755033}
 --- !u!1001 &1814155638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -980,6 +950,79 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &4302738215652799128
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4302738216058999669, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_Name
+      value: SpawnManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.99304986
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.14186561
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.011230469
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999670, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: Team1SpawnPoint
+      value: 
+      objectReference: {fileID: 2024916534}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: Team2SpawnPoint
+      value: 
+      objectReference: {fileID: 170826164}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: Enemy1SpawnPoint
+      value: 
+      objectReference: {fileID: 723379021}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: Enemy2SpawnPoint
+      value: 
+      objectReference: {fileID: 1716755033}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
 --- !u!1001 &7838983975625691038
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class ControlPoint : MonoBehaviour
@@ -15,16 +16,22 @@ public class ControlPoint : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (PhotonNetwork.IsMasterClient)
         {
-            //todo: Qui bisogna uccidere il nemico
-            life--;
-            if (life <= 0)
+            if (collision.gameObject.CompareTag("Enemy"))
             {
-                MatchManager.GameEnded(i_Team);
+                //todo: Qui bisogna uccidere il nemico
+                life--;
+            
+                collision.gameObject.GetComponent<EnemyController>().Die();
+                if (life <= 0)
+                {
+                    MatchManager.GameEnded(i_Team);
+                }
+                //todo: pensare anche a roba grafica
             }
-            //todo: pensare anche a roba grafica
         }
+       
     }
 }
 
