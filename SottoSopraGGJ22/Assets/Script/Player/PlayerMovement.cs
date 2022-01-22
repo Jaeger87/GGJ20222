@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -33,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bHasFrontWall = false;
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
+    private bool m_bLookingRight = true;
     
     private bool m_bIsJumping = false;
     private float m_TargetMovementSpeed = 0f;
@@ -41,9 +41,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
+    private PlayerController m_Controller = null;
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
+        m_Controller = GetComponent<PlayerController>();
     }
 
 
@@ -74,6 +77,21 @@ public class PlayerMovement : MonoBehaviour
     private void CheckMovement()
     {
         m_TargetMovementSpeed = Input.GetAxis("Horizontal") * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
+        float sign = Mathf.Sign(m_TargetMovementSpeed);
+
+        if (m_TargetMovementSpeed != 0)
+        {
+            if (m_bLookingRight && sign < 0)
+            {
+                Flip();
+            }
+
+            if (!m_bLookingRight && sign > 0)
+            {
+                Flip();
+            }
+        }
+        
         if (m_bHasFrontWall && m_TargetMovementSpeed > 0f)
         {
             m_TargetMovementSpeed = 0f;
@@ -83,6 +101,12 @@ public class PlayerMovement : MonoBehaviour
         {
             m_TargetMovementSpeed = 0f;
         }
+    }
+
+    private void Flip()
+    {
+        m_Controller.Flip();
+        m_bLookingRight = !m_bLookingRight;
     }
 
     private void CheckJump()
