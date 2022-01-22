@@ -19,6 +19,6 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        //SceneManager  Vai in game!
+        SceneManager.LoadScene("Lobby");
     }
 }
