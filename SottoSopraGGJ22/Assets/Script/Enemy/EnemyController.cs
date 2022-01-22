@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
 public class EnemyController : MonoBehaviour
 {
@@ -31,11 +32,13 @@ public class EnemyController : MonoBehaviour
     private Vector3 m_ObjectivePosition = Vector3.zero;
 
     private Vector3 m_TargetStairPosition;
+    
+    private PhotonView m_PhotonView;
 
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
-
+        m_PhotonView = GetComponent<PhotonView>();
         SearchObjective();
     }
 
@@ -160,7 +163,17 @@ public class EnemyController : MonoBehaviour
 
     public void OnHit()
     {
-        m_TargetStairPosition = Vector3.zero;
+        m_PhotonView.RPC("ChangeTeam", RpcTarget.AllBuffered, m_Rigidbody.position);
+    }
+
+    
+    [PunRPC]
+    public void ChangeTeam(Vector2 diePosition)
+    {
+        Vector2 LocalPosition = diePosition;
+        LocalPosition.x *= -1f;
+        transform.localPosition = LocalPosition;
+        m_TargetStairPosition = Vector2.zero;
         m_bIsMovingOnStairs = false;
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();

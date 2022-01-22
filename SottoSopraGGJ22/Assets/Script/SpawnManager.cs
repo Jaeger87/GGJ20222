@@ -5,6 +5,9 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject PlayerPrefab;
+    
+    [SerializeField]
+    private GameObject EnemyPrefab;
 
     [SerializeField]
     private Transform Team1SpawnPoint;
@@ -25,6 +28,7 @@ public class SpawnManager : MonoBehaviour
             // team 1
             GameObject Player = PhotonNetwork.Instantiate("Player/" + PlayerPrefab.name, Team1SpawnPoint.position, Quaternion.identity);
             Player.GetComponent<PlayerController>().SetTeam(ETeam.Team1);
+            SpawnEnemy();
         }
         else
         {
@@ -32,12 +36,14 @@ public class SpawnManager : MonoBehaviour
             GameObject Player = PhotonNetwork.Instantiate("Player/" + PlayerPrefab.name, Team2SpawnPoint.position, Quaternion.identity);
             Player.GetComponent<PlayerController>().SetTeam(ETeam.Team2);
         }
+
+        
     }
 
     public void SpawnEnemy()
     {
-        //GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy1SpawnPoint.position, Quaternion.identity);
-        //GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy2SpawnPoint.position, Quaternion.identity);
+        GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy1SpawnPoint.position, Quaternion.identity);
+        GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy2SpawnPoint.position, Quaternion.identity);
         
         //Qui settare cose sui nemici
     }
