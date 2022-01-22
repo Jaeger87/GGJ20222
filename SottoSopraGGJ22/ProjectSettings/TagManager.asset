@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - ControlPoint_Team1
   - ControlPoint_Team2
+  - Platform
   layers:
   - Default
   - TransparentFX

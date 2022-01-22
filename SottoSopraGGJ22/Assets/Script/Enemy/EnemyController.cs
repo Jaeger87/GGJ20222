@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 
@@ -31,8 +30,7 @@ public class EnemyController : MonoBehaviour
 
     private Vector3 m_ObjectivePosition = Vector3.zero;
 
-    private Vector3 m_TargetStairPosition;
-    
+    private Vector3 m_TargetStairDirection;
     private PhotonView m_PhotonView;
 
     private void Awake()
@@ -74,6 +72,7 @@ public class EnemyController : MonoBehaviour
         
         if (m_bIsMovingOnStairs)
         {
+            m_Rigidbody.MovePosition(transform.position + m_TargetStairDirection * Time.fixedDeltaTime * 2f);
             return;
         }
         
@@ -126,6 +125,7 @@ public class EnemyController : MonoBehaviour
     {
         if (m_bIsMovingOnStairs)
         {
+            m_bIsMovingOnStairs = false;
             return;
         }
         
@@ -137,7 +137,6 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
-        
         m_bIsMovingOnStairs = true;
         m_Rigidbody.velocity = Vector2.zero;
         
@@ -145,20 +144,7 @@ public class EnemyController : MonoBehaviour
         LocalPosition.x = i_StartPoint.x;
         transform.position = LocalPosition;
 
-        m_TargetStairPosition = i_EndPoint;
-
-        StartCoroutine(MoveToTargetPosition());
-    }
-
-    private IEnumerator MoveToTargetPosition()
-    {
-        while (Vector3.Distance(transform.position, m_TargetStairPosition) > 0.025f)
-        {
-            transform.position = Vector3.Lerp(transform.position, m_TargetStairPosition, 0.01f);
-            yield return new WaitForEndOfFrame();
-        }
-
-        m_bIsMovingOnStairs = false;
+        m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
     }
 
     public void OnHit()
@@ -178,6 +164,7 @@ public class EnemyController : MonoBehaviour
         LocalPosition.x *= -1f;
         transform.localPosition = LocalPosition;
         m_TargetStairPosition = Vector2.zero;
+        m_TargetStairDirection = Vector3.zero;
         m_bIsMovingOnStairs = false;
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();
