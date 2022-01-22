@@ -4,7 +4,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    private SpriteRenderer Graphics; 
+    private SpriteRenderer Graphics;
+
+    [SerializeField]
+    private UIPage_PlayerGame PlayerInGameUI;
     
     [SerializeField]
     private Sprite Team1Graphics;
@@ -27,9 +30,15 @@ public class PlayerController : MonoBehaviour
     private void SetupPlayer(ETeam i_Team)
     {
         m_Team = i_Team;
+        
         if (Graphics != null)
         {
             Graphics.sprite = m_Team == ETeam.Team1 ? Team1Graphics : Team2Graphics;
+        }
+
+        if (PlayerInGameUI != null)
+        {
+            PlayerInGameUI.SetNameLabelByTeam(i_Team);
         }
     }
 
