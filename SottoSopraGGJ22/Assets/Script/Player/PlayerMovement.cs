@@ -37,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bIsJumping = false;
     private float m_TargetMovementSpeed = 0f;
 
+    private Vector2 m_GroundCheckSize = new Vector2(0.4f, 0.1f);
+    private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
+    private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private void Awake()
     {
@@ -59,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") > 0f;
+        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") < 0f;
 
         if (dash)
         {
@@ -84,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckJump()
     {
-        bool jump = !m_bIsJumping && Input.GetAxis("Vertical") > 0.1f;
+        bool jump = !m_bIsJumping && Input.GetAxis("Jump") > 0.1f;
         
         if (m_bIsJumping && m_Rigidbody.velocity.y < 0)
         {
@@ -104,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (FloorCheck != null)
         {
-            if(Physics2D.OverlapBox(FloorCheck.position, new Vector2(0.5f, 0.1f), 0, FloorMask))
+            if(Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask))
             {
                 m_bIsGrounded = true;
             }
@@ -117,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (FrontWallCheck != null)
         {
-            if(Physics2D.OverlapBox(FrontWallCheck.position, new Vector2(0.1f, 0.5f), 0, FloorMask))
+            if(Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, FloorMask))
             {
                 m_bHasFrontWall = true;
             }
@@ -129,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (BackWallCheck != null)
         {
-            if(Physics2D.OverlapBox(BackWallCheck.position, new Vector2(0.1f, 0.5f), 0, FloorMask))
+            if(Physics2D.OverlapBox(BackWallCheck.position, m_BackWallCheckSize, 0, FloorMask))
             {
                 m_bHasBackWall = true;
             }
@@ -157,5 +160,12 @@ public class PlayerMovement : MonoBehaviour
         float targetSpeed = Mathf.Lerp(currentSpeed, m_TargetMovementSpeed, 0.2f);
 
         return targetSpeed;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(FloorCheck.position, m_GroundCheckSize);
+        Gizmos.DrawWireCube(BackWallCheck.position, m_BackWallCheckSize);
+        Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
     }
 }
