@@ -3,6 +3,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
+    private PlayerDamage PlayerDamage;
+    
+    [SerializeField]
     private float MovementSpeed = 10f;
     
     [SerializeField]
@@ -13,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     private float DashForce = 9.8f;
+
+    [SerializeField]
+    private float DashDeltaTime = 0.25f;
     
     [SerializeField]
     private Transform FloorCheck = null;
@@ -33,15 +39,19 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
     private bool m_bLookingRight = true;
-    
     private bool m_bIsJumping = false;
-    private float m_TargetMovementSpeed = 0f;
+    private bool m_bIsDashing = false;
 
+    private float m_TargetMovementSpeed = 0f;
+    private float m_JumpDeltaTime = 0f;
+    
     private Vector2 m_GroundCheckSize = new Vector2(0.4f, 0.1f);
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private PlayerController m_Controller = null;
+    
+    private bool DashAvailable => !m_bIsGrounded && m_JumpDeltaTime > DashDeltaTime;
 
     private void Awake()
     {
@@ -56,6 +66,21 @@ public class PlayerMovement : MonoBehaviour
         CheckGround();
         CheckJump();
         CheckDash();
+
+        m_Controller.SetDashHintActive(DashAvailable);
+
+        if (m_bIsDashing)
+        {
+            if (PlayerDamage.CheckHit())
+            {
+                OnHit();
+            }
+        }
+    }
+
+    private void OnHit()
+    {
+        print("Player should hit");
     }
 
     private void CheckDash()
@@ -65,12 +90,14 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") < 0f;
+        bool dash = DashAvailable && Input.GetAxis("Vertical") < 0f;
 
         if (dash)
         {
             m_bHasDash = false;
-            m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+            m_bIsDashing = true;
+            // m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+            m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, -DashForce);
         }
     }
 
@@ -134,11 +161,14 @@ public class PlayerMovement : MonoBehaviour
             if(Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask))
             {
                 m_bIsGrounded = true;
+                m_bIsDashing = false;
+                m_bHasDash = true;
+                m_JumpDeltaTime = 0f;
             }
             else
             {
                 m_bIsGrounded = false;
-                m_bHasDash = true;
+                m_JumpDeltaTime += Time.deltaTime;
             }
         }
 
