@@ -1,11 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite Team1Graphics;
+    
+    [SerializeField]
+    private Sprite Team2Graphics;
+    
+    
     private ETeam m_Team;
     private PhotonView m_PhotonView;
     
