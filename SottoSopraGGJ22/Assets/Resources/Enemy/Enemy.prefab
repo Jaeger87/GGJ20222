@@ -71,10 +71,10 @@ GameObject:
   - component: {fileID: 3803102326549632332}
   - component: {fileID: 3803102326549632335}
   - component: {fileID: 3803102326549632333}
+  - component: {fileID: 7497791631823777487}
   - component: {fileID: 3803102326549632338}
   - component: {fileID: 3803102326549632336}
   - component: {fileID: 3803102326549632339}
-  - component: {fileID: 7497791631823777487}
   - component: {fileID: 3995973803626440314}
   m_Layer: 11
   m_Name: Enemy
@@ -176,6 +176,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7497791631823777487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3803102326549632334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce08b0f67a19e241b707ed5eb61497b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MovementSpeed: 1
+  FallCheck: {fileID: 5682794505960620328}
+  FrontWallCheck: {fileID: 3539432087257543365}
+  FloorMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &3803102326549632338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,24 +245,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &7497791631823777487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803102326549632334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ce08b0f67a19e241b707ed5eb61497b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MovementSpeed: 3
-  FallCheck: {fileID: 5682794505960620328}
-  FrontWallCheck: {fileID: 3539432087257543365}
-  FloorMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!50 &3995973803626440314
 Rigidbody2D:
   serializedVersion: 4
