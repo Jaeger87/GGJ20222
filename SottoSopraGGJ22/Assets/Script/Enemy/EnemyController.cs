@@ -14,9 +14,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
     
     [SerializeField]
     private LayerMask FloorMask;
-    
-    private EnvironmentContainer _mEnvironmentContainer;
-    
+
     private ETeam m_TargetTeam = ETeam.Team1;
 
     private Rigidbody2D m_Rigidbody;
@@ -35,8 +33,6 @@ public class EnemyController : MonoBehaviour, IPunObservable
     private Vector3 m_TargetStairDirection;
     private PhotonView m_PhotonView;
 
-    private Floor m_CurrentFloor;
-
 
     private bool m_bvaluesReceived = false;
     private void Awake()
@@ -48,10 +44,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
             m_Rigidbody.isKinematic = true;
         }
         m_PhotonView = GetComponent<PhotonView>();
-        m_CurrentFloor = Floor.ZERO;
         SearchObjective();
-        _mEnvironmentContainer = GameObject.Find("Environment").GetComponent<EnvironmentContainer>();
-        SetDirectionInFloor();
     }
 
     private void SearchObjective()
@@ -62,19 +55,6 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             m_ObjectivePosition = Objective.transform.position;
         }
-    }
-
-    private void SetDirectionInFloor()
-    {
-        if (m_CurrentFloor == Floor.LAST)
-            return;
-        DirectionToGO myNextDirection = _mEnvironmentContainer.MostNearStairs(transform.position, m_TargetTeam, m_CurrentFloor);
-
-        if ((m_bLookingRight && myNextDirection == DirectionToGO.RIGHT) ||
-            (!m_bLookingRight && myNextDirection == DirectionToGO.LEFT))
-            return;
-        Flip();
-
     }
 
     private void Update()
@@ -190,8 +170,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
     public void OnStairsExit()
     {
         m_bIsMovingOnStairs = false;
-        m_CurrentFloor++;
-        SetDirectionInFloor();
+        Flip();
     }
 
     public void OnHit()
@@ -214,7 +193,6 @@ public class EnemyController : MonoBehaviour, IPunObservable
         m_bIsMovingOnStairs = false;
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();
-        SetDirectionInFloor();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -229,5 +207,10 @@ public class EnemyController : MonoBehaviour, IPunObservable
             m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
             m_bvaluesReceived = true;
         }
+    }
+
+    public void SetLookingRight(bool i_right)
+    {
+        m_bLookingRight = i_right;
     }
 }

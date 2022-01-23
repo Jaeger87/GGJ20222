@@ -1,5 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -15,11 +16,11 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private Transform Team2SpawnPoint;
     
-    [SerializeField]
-    private Transform Enemy1SpawnPoint;
+    [FormerlySerializedAs("Enemy1SpawnPoint")] [SerializeField]
+    private Transform EnemyLeftSpawnPoint;
     
-    [SerializeField]
-    private Transform Enemy2SpawnPoint;
+    [FormerlySerializedAs("Enemy2SpawnPoint")] [SerializeField]
+    private Transform EnemyRightSpawnPoint;
 
     private const float SpawnEnemyDeltaTime = 5.0f;
     private float m_fTimeToNextSpawn = float.MaxValue;
@@ -74,12 +75,13 @@ public class SpawnManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy1SpawnPoint.position, Quaternion.identity);
+            GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyLeftSpawnPoint.position, Quaternion.identity);
         
-            GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy2SpawnPoint.position, Quaternion.identity);
-            
-            
-            //Qui NON settare cose sui nemici (Deve farlo l'awake per forza, salvo non sia solo lato server)
+            GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyRightSpawnPoint.position, Quaternion.identity);
+
+
+            EnemyForPlayer1.GetComponent<EnemyController>().SetLookingRight(true);
+            EnemyForPlayer2.GetComponent<EnemyController>().SetLookingRight(false);
         }
         
 

@@ -350,72 +350,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5100285989547752206, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
   m_PrefabInstance: {fileID: 181684467}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &181684469 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3755533397814408274, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &181684471 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3400033396636227273, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &181684472 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1371026013084169920, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &181684473 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4370838864333459882, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &181684475 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4370838864141115164, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &181684476 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3150576694048087051, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 181684467}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd31418be074b6649ab884b8aa194ac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &181684477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,16 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c8e0c4de33e17d4a8a786c621aa53ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Team1Stars:
-  - {fileID: 181684476}
-  - {fileID: 181684475}
-  - {fileID: 0}
-  - {fileID: 181684473}
-  Team2Stars:
-  - {fileID: 181684472}
-  - {fileID: 181684471}
-  - {fileID: 0}
-  - {fileID: 181684469}
 --- !u!1 &723379020
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 723379021}
   m_Layer: 0
-  m_Name: SpawnPoint_Enemy1
+  m_Name: SpawnPoint_EnemyRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -466,7 +390,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &937208526
 PrefabInstance:
@@ -521,7 +445,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 10847134878819800, guid: 98423dd7207acb444afb1016cd647949, type: 3}
       propertyPath: m_Name
-      value: ControlPointTest
+      value: ControlPointTestLeft
       objectReference: {fileID: 0}
     - target: {fileID: 10847134878819800, guid: 98423dd7207acb444afb1016cd647949, type: 3}
       propertyPath: m_TagString
@@ -586,7 +510,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 10847134878819800, guid: 98423dd7207acb444afb1016cd647949, type: 3}
       propertyPath: m_Name
-      value: ControlPointTest2
+      value: ControlPointTestRight
       objectReference: {fileID: 0}
     - target: {fileID: 10847134878819800, guid: 98423dd7207acb444afb1016cd647949, type: 3}
       propertyPath: m_TagString
@@ -635,7 +559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1716755033}
   m_Layer: 0
-  m_Name: SpawnPoint_Enemy2
+  m_Name: SpawnPoint_EnemyLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -649,11 +573,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1716755032}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: -4.43, z: 0}
+  m_LocalPosition: {x: -8, y: -4.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1758093807 stripped
 MonoBehaviour:
@@ -762,11 +686,19 @@ PrefabInstance:
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Enemy1SpawnPoint
       value: 
-      objectReference: {fileID: 723379021}
+      objectReference: {fileID: 1716755033}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Enemy2SpawnPoint
       value: 
+      objectReference: {fileID: 723379021}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyLeftSpawnPoint
+      value: 
       objectReference: {fileID: 1716755033}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyRightSpawnPoint
+      value: 
+      objectReference: {fileID: 723379021}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: m_EnviromentContainer
       value: 
