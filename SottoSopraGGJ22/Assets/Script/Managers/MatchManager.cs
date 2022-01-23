@@ -1,10 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class MatchManager : MonoBehaviour
 {
     private MatchManager Instance;
+    private PhotonView m_PhotonView;
+    [SerializeField]
+    private SpawnManager m_Spawnmanager = null;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -16,11 +22,35 @@ public class MatchManager : MonoBehaviour
         {
             Destroy(this);
         }
+
+        m_PhotonView = GetComponent<PhotonView>();
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            m_PhotonView.RPC("StartGame", RpcTarget.AllBuffered);
+        }
+    }
+    [PunRPC]
+    private void StartGame()
+    {
+        m_Spawnmanager.StartGame();
     }
 
-    public static void GameEnded(ETeam i_Team)
+    public void GameEnded(ETeam i_Team)
     {
         Debug.Log($"{i_Team} lose");
-        //@todo andrea devi capire come sincronizzare quest'evento
+        ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        m_Spawnmanager.EndGame();
+        m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
+        
+        
     }
+    
+    [PunRPC]
+    public void GameOver(ETeam i_WinnerTeam)
+    {
+        //todo: GameOver, decidere cosa mostrare
+        
+    }
+    
 }
