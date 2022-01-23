@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public enum EStairPoint
+{
+    None,
+    Start,
+    End
+}
+
 public class Stairs : MonoBehaviour
 {
         
@@ -23,7 +30,7 @@ public class Stairs : MonoBehaviour
 
             if (Enemy != null)
             {
-                Enemy.OnStairsEnter(UpStartPoint.position, DownStartPoint.position);
+                Enemy.OnStairsEnter(UpStartPoint.position, DownStartPoint.position, EStairPoint.Start);
             }
         }
         
@@ -34,7 +41,7 @@ public class Stairs : MonoBehaviour
 
             if (Enemy != null)
             {
-                Enemy.OnStairsEnter(DownStartPoint.position, UpStartPoint.position);
+                Enemy.OnStairsEnter(DownStartPoint.position, UpStartPoint.position, EStairPoint.End);
             }
         }
     }

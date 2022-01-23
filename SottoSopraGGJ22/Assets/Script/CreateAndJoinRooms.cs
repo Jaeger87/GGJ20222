@@ -37,7 +37,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
         SaveName();
         
-        PhotonNetwork.JoinOrCreateRoom(RoomName.text, GetRoomConfig(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom(RoomName.text.ToLower(), GetRoomConfig(), TypedLobby.Default);
         
         if (LoadingUI != null)
         {
@@ -63,7 +63,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
         SaveName();
         
-        PhotonNetwork.JoinOrCreateRoom(RoomName.text, GetRoomConfig(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom(RoomName.text.ToLower(), GetRoomConfig(), TypedLobby.Default);
         
         if (LoadingUI != null)
         {
