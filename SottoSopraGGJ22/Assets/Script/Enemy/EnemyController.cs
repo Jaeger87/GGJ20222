@@ -5,10 +5,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
 {
     [SerializeField]
     private float MovementSpeed = 5f;
-    
-    [SerializeField]
-    private Transform FallCheck = null;
-    
+
     [SerializeField]
     private Transform FrontWallCheck = null;
     
@@ -19,20 +16,23 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private Rigidbody2D m_Rigidbody;
     
-    private Vector2 m_FallCheckSize = new Vector2(0.1f, 0.1f);
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
-    private bool m_bGonnaFall = false;
 
     private bool m_bLookingRight = true;
     private bool m_bIsMovingOnStairs = false;
 
+    private bool m_bFloorCheckEnabled = true; 
+
     private Vector3 m_ObjectivePosition = Vector3.zero;
     
     private Vector3 m_TargetStairDirection;
+    private EStairPoint m_StairPointClimbStart = EStairPoint.None;
+    
     private PhotonView m_PhotonView;
 
+    private bool m_bOffline => !PhotonNetwork.IsConnected;
 
     private bool m_bvaluesReceived = false;
     private void Awake()
@@ -59,7 +59,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
             CheckCollisions();
             if (m_bIsCollidingForward)
@@ -73,7 +73,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
     private void FixedUpdate()
     {
 
-        if (PhotonNetwork.IsMasterClient)
+        if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
             if (m_Rigidbody == null)
             {
@@ -110,18 +110,11 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void CheckCollisions()
     {
-        if (FallCheck != null)
+        if (!m_bFloorCheckEnabled)
         {
-            if (Physics2D.OverlapBox(FallCheck.position, m_FallCheckSize, 0, FloorMask))
-            {
-                m_bGonnaFall = false;
-            }
-            else
-            {
-                m_bGonnaFall = true;
-            }
+            return;
         }
-
+        
         if (FrontWallCheck != null)
         {
             if (Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, FloorMask))
@@ -137,42 +130,44 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(FallCheck.position, m_FallCheckSize);
         Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
     }
 
-    public void OnStairsEnter(Vector3 i_StartPoint, Vector3 i_EndPoint)
+    public void OnStairsEnter(Vector3 i_StartPoint, Vector3 i_EndPoint, EStairPoint i_eStairPoint)
     {
-        if (PhotonNetwork.IsMasterClient)
+        if(PhotonNetwork.IsMasterClient)
         {
+            if (i_eStairPoint == m_StairPointClimbStart)
+            {
+                 return;
+            }
+        
             if (m_bIsMovingOnStairs)
             {
-                OnStairsExit();
-                return;
-            }
-        
-            float DistanceFromStartToObjective = Vector3.Distance(i_StartPoint, m_ObjectivePosition);
-            float DistanceFromEndToObjective = Vector3.Distance(i_EndPoint, m_ObjectivePosition);
-
-            if (DistanceFromStartToObjective < DistanceFromEndToObjective)
-            {
-                return;
+                 m_StairPointClimbStart = i_eStairPoint;
+                 OnStairsExit();
+                 return;
             }
 
-            m_bIsMovingOnStairs = true;
-            m_Rigidbody.velocity = Vector2.zero;
-        
-            Vector3 LocalPosition = transform.localPosition;
-            LocalPosition.x = i_StartPoint.x;
-            transform.position = LocalPosition;
+             m_StairPointClimbStart = i_eStairPoint;
 
-            m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
+             m_bFloorCheckEnabled = false;
+
+              m_bIsMovingOnStairs = true;
+              m_Rigidbody.velocity = Vector2.zero;
+        
+              Vector3 LocalPosition = transform.localPosition;
+              LocalPosition.x = i_StartPoint.x;
+              transform.position = LocalPosition;
+
+              m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
         }
     }
 
     public void OnStairsExit()
     {
         m_bIsMovingOnStairs = false;
+        m_bFloorCheckEnabled = true;
         Flip();
     }
 
@@ -196,6 +191,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
             transform.localPosition = LocalPosition;
             m_TargetStairDirection = Vector3.zero;
             m_bIsMovingOnStairs = false;
+            m_StairPointClimbStart = EStairPoint.None;
             m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
             SearchObjective();
         }
@@ -207,12 +203,19 @@ public class EnemyController : MonoBehaviour, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(m_Rigidbody.velocity);
+            stream.SendNext(m_bLookingRight);
         }
         else
         {
             //Network player, receive data
             m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
+            bool direction = (bool) stream.ReceiveNext();
+            if (direction != m_bLookingRight)
+            {
+                Flip();
+            }
             m_bvaluesReceived = true;
+            
         }
     }
 
