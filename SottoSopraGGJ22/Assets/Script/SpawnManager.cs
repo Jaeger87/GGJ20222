@@ -39,7 +39,7 @@ public class SpawnManager : MonoBehaviour
     {
         if (WaitingUI != null)
         {
-            WaitingUI.SetActive(true);   
+            WaitingUI.SetActive(PhotonNetwork.IsMasterClient);   
         }
     }
 
@@ -62,7 +62,10 @@ public class SpawnManager : MonoBehaviour
     
     public void StartGame()
     {
-
+        if (WaitingUI != null)
+        {
+            WaitingUI.SetActive(false);
+        }
         if (GameLoadingUI != null)
         {
             GameLoadingUI.gameObject.SetActive(true);
@@ -82,14 +85,10 @@ public class SpawnManager : MonoBehaviour
         m_bGameStarted = true;
         m_fTimeToNextSpawn = SpawnEnemyDeltaTime;
 
-        if (WaitingUI != null)
-        {
-            WaitingUI.SetActive(false);
-        }
-
         if (GameLoadingUI != null)
         {
             GameLoadingUI.CountdownEnded -= AfterStartGame;
+            GameLoadingUI.gameObject.SetActive(false);
         }
     }
 
