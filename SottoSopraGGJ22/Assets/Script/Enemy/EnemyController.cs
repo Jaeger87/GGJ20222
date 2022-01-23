@@ -260,6 +260,10 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     public void SetLookingRight(bool i_right)
     {
-        m_bLookingRight = i_right;
+        if (!i_right)
+        {
+            Flip();
+        }
+        //m_bLookingRight = i_right;
     }
 }
