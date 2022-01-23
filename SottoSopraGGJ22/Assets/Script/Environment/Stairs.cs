@@ -12,6 +12,14 @@ public class Stairs : MonoBehaviour
     [SerializeField]
     private LayerMask TargetMask;
 
+    [SerializeField]
+    private Floor m_Floor;
+
+    public Floor Floor
+    {
+        get => m_Floor;
+    }
+
     private Vector2 m_CheckSize = new Vector2(0.1f, 0.1f);
 
     private void Update()

@@ -14,7 +14,9 @@ public class EnemyController : MonoBehaviour
     
     [SerializeField]
     private LayerMask FloorMask;
-
+    
+    private EnvironmentContainer _mEnvironmentContainer;
+    
     private ETeam m_TargetTeam = ETeam.Team1;
 
     private Rigidbody2D m_Rigidbody;
@@ -23,7 +25,7 @@ public class EnemyController : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
-    private bool m_bGonnaFall = true;
+    private bool m_bGonnaFall = false;
 
     private bool m_bLookingRight = true;
     private bool m_bIsMovingOnStairs = false;
@@ -33,11 +35,17 @@ public class EnemyController : MonoBehaviour
     private Vector3 m_TargetStairDirection;
     private PhotonView m_PhotonView;
 
+    private Floor m_CurrentFloor;
+    
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
+        m_CurrentFloor = Floor.ZERO;
         SearchObjective();
+        _mEnvironmentContainer = GameObject.Find("Environment").GetComponent<EnvironmentContainer>();
+        SetDirectionInFloor();
     }
 
     private void SearchObjective()
@@ -50,11 +58,23 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private void SetDirectionInFloor()
+    {
+        if (m_CurrentFloor == Floor.LAST)
+            return;
+        DirectionToGO myNextDirection = _mEnvironmentContainer.MostNearStairs(transform.position, m_TargetTeam, m_CurrentFloor);
+
+        if ((m_bLookingRight && myNextDirection == DirectionToGO.RIGHT) ||
+            (!m_bLookingRight && myNextDirection == DirectionToGO.LEFT))
+            return;
+        Flip();
+
+    }
+
     private void Update()
     {
         CheckCollisions();
-        
-        if (m_bIsCollidingForward || m_bGonnaFall)
+        if (m_bIsCollidingForward)
         {
             Flip();
         }
@@ -125,7 +145,7 @@ public class EnemyController : MonoBehaviour
     {
         if (m_bIsMovingOnStairs)
         {
-            m_bIsMovingOnStairs = false;
+            OnStairsExit();
             return;
         }
         
@@ -145,6 +165,13 @@ public class EnemyController : MonoBehaviour
         transform.position = LocalPosition;
 
         m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
+    }
+
+    public void OnStairsExit()
+    {
+        m_bIsMovingOnStairs = false;
+        m_CurrentFloor++;
+        SetDirectionInFloor();
     }
 
     public void OnHit()
@@ -167,7 +194,6 @@ public class EnemyController : MonoBehaviour
         m_bIsMovingOnStairs = false;
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();
+        SetDirectionInFloor();
     }
-    
-    
 }

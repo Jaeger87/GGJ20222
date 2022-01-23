@@ -26,21 +26,6 @@ public class SpawnManager : MonoBehaviour
 
     private bool m_bGameStarted = false;
     private bool m_bGameEnd = false;
-    
-    private void Awake()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // team 1
-        }
-        else
-        {
-            // team 2
-            
-        }
-
-        
-    }
 
     public void SpawnPlayers()
     {
@@ -93,7 +78,8 @@ public class SpawnManager : MonoBehaviour
         
             GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, Enemy2SpawnPoint.position, Quaternion.identity);
             
-            //Qui settare cose sui nemici
+            
+            //Qui NON settare cose sui nemici (Deve farlo l'awake per forza, salvo non sia solo lato server)
         }
         
 
