@@ -121,6 +121,7 @@ MonoBehaviour:
   FloorMask:
     serializedVersion: 2
     m_Bits: 64
+  m_Animator: {fileID: 755766210751442761}
 --- !u!114 &71214289315375558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -668,6 +669,8 @@ GameObject:
   - component: {fileID: 5640643509427921638}
   - component: {fileID: 6672156283320357792}
   - component: {fileID: 6318621197216408992}
+  - component: {fileID: 755766210751442761}
+  - component: {fileID: 4679848074472972290}
   m_Layer: 7
   m_Name: Graphics
   m_TagString: Untagged
@@ -729,7 +732,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: 027669b5d4c9a4e40a1252e269ca5252, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e599a308496bb694bbda6f394e57f953, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -760,6 +763,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 6672156283320357792}
+  - {fileID: 4679848074472972290}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -791,6 +795,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d38431bca26c4746a526fdcc20ab99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &755766210751442761
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5796843557579792884}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 93d9ae1e9954f164894d4b83a2d88c46, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4679848074472972290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5796843557579792884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 2
+    Name: Move
+  - Type: 4
+    SynchronizeType: 2
+    Name: Jump
+  - Type: 4
+    SynchronizeType: 2
+    Name: Dash
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &6651998141421340018
 GameObject:
   m_ObjectHideFlags: 0

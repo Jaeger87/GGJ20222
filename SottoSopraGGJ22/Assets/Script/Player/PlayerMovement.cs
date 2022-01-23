@@ -35,6 +35,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     [SerializeField]
     private LayerMask FloorMask;
+
+    [SerializeField]
+    private Animator m_Animator;
     
     private Rigidbody2D m_Rigidbody = null;
 
@@ -102,6 +105,14 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 }
             }
         }
+    }
+
+    private void LateUpdate()
+    {
+        bool bMoving = m_Rigidbody.velocity.x != 0f;
+        m_Animator.SetBool("Move", bMoving && !m_bIsJumping);
+        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0);
+        m_Animator.SetBool("Dash", m_bIsDashing);
     }
 
     private void OnHit()
@@ -215,6 +226,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 m_bIsGrounded = true;
                 m_bIsDashing = false;
                 m_bHasDash = true;
+                m_bIsJumping = false;
                 m_JumpDeltaTime = 0f;
                 m_JumpCount = 0;
                 m_Collider.enabled = true;
@@ -269,8 +281,12 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             return;
         }
+        
         if(!m_bvaluesReceived)
+        {
             m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
+        }
+        
         m_bvaluesReceived = false;
     }
 
