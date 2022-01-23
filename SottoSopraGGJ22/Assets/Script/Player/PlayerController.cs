@@ -84,16 +84,7 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInGameUI != null)
         {
-            string Name = PlayerPrefs.GetString("player_name");
-            
-            if (!String.IsNullOrEmpty(Name))
-            {
-                PlayerInGameUI.SetNameLabel(Name);
-            }
-            else
-            {
-                PlayerInGameUI.SetNameLabelByTeam(i_Team);
-            }
+            PlayerInGameUI.SetNameLabelByTeam(i_Team);
         }
     }
 
