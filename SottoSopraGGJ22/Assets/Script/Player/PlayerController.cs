@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -83,7 +84,16 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInGameUI != null)
         {
-            PlayerInGameUI.SetNameLabelByTeam(i_Team);
+            string Name = PlayerPrefs.GetString("player_name");
+            
+            if (!String.IsNullOrEmpty(Name))
+            {
+                PlayerInGameUI.SetNameLabel(Name);
+            }
+            else
+            {
+                PlayerInGameUI.SetNameLabelByTeam(i_Team);
+            }
         }
     }
 
