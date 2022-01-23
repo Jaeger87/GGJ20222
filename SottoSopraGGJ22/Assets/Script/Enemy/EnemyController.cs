@@ -135,30 +135,33 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     public void OnStairsEnter(Vector3 i_StartPoint, Vector3 i_EndPoint, EStairPoint i_eStairPoint)
     {
-        if (i_eStairPoint == m_StairPointClimbStart)
+        if(PhotonNetwork.IsMasterClient)
         {
-            return;
-        }
+            if (i_eStairPoint == m_StairPointClimbStart)
+            {
+                 return;
+            }
         
-        if (m_bIsMovingOnStairs)
-        {
-            m_StairPointClimbStart = i_eStairPoint;
-            OnStairsExit();
-            return;
-        }
+            if (m_bIsMovingOnStairs)
+            {
+                 m_StairPointClimbStart = i_eStairPoint;
+                 OnStairsExit();
+                 return;
+            }
 
-        m_StairPointClimbStart = i_eStairPoint;
+             m_StairPointClimbStart = i_eStairPoint;
 
-        m_bFloorCheckEnabled = false;
+             m_bFloorCheckEnabled = false;
 
-        m_bIsMovingOnStairs = true;
-        m_Rigidbody.velocity = Vector2.zero;
+              m_bIsMovingOnStairs = true;
+              m_Rigidbody.velocity = Vector2.zero;
         
-        Vector3 LocalPosition = transform.localPosition;
-        LocalPosition.x = i_StartPoint.x;
-        transform.position = LocalPosition;
+              Vector3 LocalPosition = transform.localPosition;
+              LocalPosition.x = i_StartPoint.x;
+              transform.position = LocalPosition;
 
-        m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
+              m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
+        }
     }
 
     public void OnStairsExit()
@@ -181,14 +184,18 @@ public class EnemyController : MonoBehaviour, IPunObservable
     [PunRPC]
     public void ChangeTeam(Vector2 diePosition)
     {
-        Vector2 LocalPosition = diePosition;
-        LocalPosition.x *= -1f;
-        transform.localPosition = LocalPosition;
-        m_TargetStairDirection = Vector3.zero;
-        m_bIsMovingOnStairs = false;
-        m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        Flip();
-        SearchObjective();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Vector2 LocalPosition = diePosition;
+            LocalPosition.x *= -1f;
+            transform.localPosition = LocalPosition;
+            m_TargetStairDirection = Vector3.zero;
+            m_bIsMovingOnStairs = false;
+            m_StairPointClimbStart = EStairPoint.None;
+            m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+            SearchObjective();
+        }
+        
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -196,12 +203,19 @@ public class EnemyController : MonoBehaviour, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(m_Rigidbody.velocity);
+            stream.SendNext(m_bLookingRight);
         }
         else
         {
             //Network player, receive data
             m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
+            bool direction = (bool) stream.ReceiveNext();
+            if (direction != m_bLookingRight)
+            {
+                Flip();
+            }
             m_bvaluesReceived = true;
+            
         }
     }
 
