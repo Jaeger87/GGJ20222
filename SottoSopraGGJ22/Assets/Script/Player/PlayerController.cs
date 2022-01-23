@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -6,6 +7,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private SpriteRenderer Graphics;
 
+    [SerializeField]
+    private PlayerHitHintController HitHintController;
+    
+    [SerializeField]
+    private GameObject ArrowUpHint;
+    
+    [SerializeField]
+    private GameObject ArrowDownHint;
+    
     [SerializeField]
     private UIPage_PlayerGame PlayerInGameUI;
     
@@ -17,12 +27,48 @@ public class PlayerController : MonoBehaviour
     
     private ETeam m_Team;
     private PhotonView m_PhotonView;
+
+    private PlayerMovement m_PlayerMovement;
     
     public void SetTeam(ETeam i_Team)
     {
         if (m_PhotonView.IsMine)
         {
             m_PhotonView.RPC("SetupPlayer", RpcTarget.AllBuffered, i_Team);
+        }
+    }
+
+    
+    public void SendJump()
+    {
+        if (m_PhotonView.IsMine)
+        {
+            m_PhotonView.RPC("AddJumpForce", RpcTarget.AllBuffered);
+        }
+    }
+    public void SendDash()
+    {
+        if (m_PhotonView.IsMine)
+        {
+            m_PhotonView.RPC("AddDashForce", RpcTarget.AllBuffered);
+        }
+    }
+
+    [PunRPC]
+    public void AddJumpForce()
+    {
+        if (!m_PhotonView.IsMine)
+        {
+            m_PlayerMovement.AddJumpToRigidBody();
+        }
+    }
+    
+    [PunRPC]
+    public void AddDashForce()
+    {
+        if (!m_PhotonView.IsMine)
+        {
+            m_PlayerMovement.AddDashToRigidBody();
         }
     }
     
@@ -45,10 +91,12 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         m_PhotonView = GetComponent<PhotonView>();
+        m_PlayerMovement = GetComponent<PlayerMovement>();
 
         if (m_PhotonView != null && !m_PhotonView.IsMine)
         {
-            GetComponent<PlayerMovement>().enabled = false;
+            m_PlayerMovement.SetAsNetworkPlayer();
+            SetDashHintActive(false);
         }
     }
 
@@ -57,5 +105,20 @@ public class PlayerController : MonoBehaviour
         Vector3 scale = Graphics.transform.localScale;
         scale.x *= -1f;
         Graphics.transform.localScale = scale;
+    }
+
+    public void SetDashHintActive(bool i_bActive)
+    {
+        HitHintController.gameObject.SetActive(i_bActive);
+    }
+
+    public void OnCanJumpOverPlatform(bool i_bCanJump)
+    {
+        ArrowUpHint.SetActive(i_bCanJump);
+    }
+    
+    public void OnCanJumpDownPlatform(bool i_bCanJump)
+    {
+        ArrowDownHint.SetActive(i_bCanJump);
     }
 }

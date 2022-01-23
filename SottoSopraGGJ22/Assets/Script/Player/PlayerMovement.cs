@@ -1,7 +1,11 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPunObservable
 {
+    [SerializeField]
+    private PlayerDamage PlayerDamage;
+    
     [SerializeField]
     private float MovementSpeed = 10f;
     
@@ -13,7 +17,13 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     private float DashForce = 9.8f;
+
+    [SerializeField]
+    private float DashDeltaTime = 0.25f;
     
+    [SerializeField]
+    private Transform HeadCheck = null;
+
     [SerializeField]
     private Transform FloorCheck = null;
     
@@ -25,6 +35,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     private LayerMask FloorMask;
+
+    [SerializeField]
+    private Animator m_Animator;
     
     private Rigidbody2D m_Rigidbody = null;
 
@@ -33,31 +46,80 @@ public class PlayerMovement : MonoBehaviour
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
     private bool m_bLookingRight = true;
-    
     private bool m_bIsJumping = false;
+    private int m_JumpCount = 0;
+    private bool m_bIsDashing = false;
+    private bool m_LastJumpInput = false;
+    private bool m_bCanJumpDownPlatform = false;
+    
     private float m_TargetMovementSpeed = 0f;
-
-    private Vector2 m_GroundCheckSize = new Vector2(0.4f, 0.1f);
+    private float m_JumpDeltaTime = 0f;
+    
+    private Vector2 m_GroundCheckSize = new Vector2(0.1f, 0.1f);
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.5f);
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private PlayerController m_Controller = null;
 
+    private BoxCollider2D m_Collider;
+
+    // Booleani networks
+    private bool m_bNetworkPlayer = false;
+    private bool m_bvaluesReceived = false;
+
+    private bool DashAvailable => !m_bIsGrounded && m_JumpDeltaTime > DashDeltaTime;
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_Controller = GetComponent<PlayerController>();
+        m_Collider = GetComponent<BoxCollider2D>();
     }
-
-
+    
+    public void SetAsNetworkPlayer()
+    {
+        m_bNetworkPlayer = true;
+    }
+    
     private void Update()
     {
-        CheckMovement();
-        CheckGround();
-        CheckJump();
-        CheckDash();
+        if (!m_bNetworkPlayer)
+        {
+            CheckMovement();
+            CheckGround();
+            CheckJump();
+            CheckDash();
+            
+            m_Controller.SetDashHintActive(DashAvailable);
+
+            if (m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
+            {
+                m_Collider.enabled = false;
+            }
+
+            if (m_bIsDashing)
+            {
+                if (PlayerDamage.CheckHit())
+                {
+                    OnHit();
+                }
+            }
+        }
     }
 
+    private void LateUpdate()
+    {
+        bool bMoving = m_Rigidbody.velocity.x != 0f;
+        m_Animator.SetBool("Move", bMoving && !m_bIsJumping);
+        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0);
+        m_Animator.SetBool("Dash", m_bIsDashing);
+    }
+
+    private void OnHit()
+    {
+        print("Player should hit");
+    }
+    
     private void CheckDash()
     {
         if (!m_bHasDash)
@@ -65,13 +127,29 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        bool dash = !m_bIsGrounded && m_Rigidbody.velocity.y < 2f && Input.GetAxis("Vertical") < 0f;
+        bool dash = DashAvailable && Input.GetAxis("Vertical") < 0f;
 
         if (dash)
         {
-            m_bHasDash = false;
-            m_Rigidbody.AddForce(Vector2.down * DashForce, ForceMode2D.Impulse);
+            AddDashToRigidBody();
+            m_Controller.SendDash();
         }
+    }
+    
+    public void AddJumpToRigidBody()
+    {
+        m_bIsGrounded = false;
+        m_bIsJumping = true;
+        m_bvaluesReceived = true;
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+    }
+    
+    public void AddDashToRigidBody()
+    {
+        m_bHasDash = false;
+        m_bIsDashing = true;
+        m_bvaluesReceived = true;
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, -DashForce);
     }
 
     private void CheckMovement()
@@ -111,19 +189,30 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckJump()
     {
-        bool jump = !m_bIsJumping && Input.GetAxis("Jump") > 0.1f;
-        
-        if (m_bIsJumping && m_Rigidbody.velocity.y < 0)
+        bool jump = Input.GetAxisRaw("Jump") > 0.1f;
+
+        if (m_LastJumpInput == jump)
         {
-            m_bIsJumping = false;
+            return;
         }
         
-
-        if (jump && m_bIsGrounded)
+        m_LastJumpInput = jump;
+        
+        if (!jump)
         {
-            m_bIsGrounded = false;
-            m_bIsJumping = true;
-            m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+            return;
+        }
+
+        m_JumpCount++;
+
+        if (m_JumpCount < 2)
+        {
+            if (m_bIsJumping && m_Rigidbody.velocity.y < 0)
+            {
+                m_bIsJumping = false;
+            }
+            
+            AddJumpToRigidBody();
         }
     }
 
@@ -131,14 +220,33 @@ public class PlayerMovement : MonoBehaviour
     {
         if (FloorCheck != null)
         {
-            if(Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask))
+            Collider2D Hit = Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask);
+            if(Hit != null)
             {
                 m_bIsGrounded = true;
+                m_bIsDashing = false;
+                m_bHasDash = true;
+                m_bIsJumping = false;
+                m_JumpDeltaTime = 0f;
+                m_JumpCount = 0;
+                m_Collider.enabled = true;
+                m_bCanJumpDownPlatform = Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
+                m_Controller.OnCanJumpOverPlatform(false);
+                m_Controller.OnCanJumpDownPlatform(m_bCanJumpDownPlatform);
             }
             else
             {
                 m_bIsGrounded = false;
-                m_bHasDash = true;
+                m_JumpDeltaTime += Time.deltaTime;
+                m_Controller.OnCanJumpDownPlatform(false);
+            }
+        }
+        
+        if (HeadCheck != null)
+        {
+            if(Physics2D.OverlapBox(HeadCheck.position, m_GroundCheckSize, 0, FloorMask))
+            {
+                m_Controller.OnCanJumpOverPlatform(true);
             }
         }
 
@@ -174,7 +282,12 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
+        if(!m_bvaluesReceived)
+        {
+            m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
+        }
+        
+        m_bvaluesReceived = false;
     }
 
     private float GetMovementForce()
@@ -191,5 +304,20 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireCube(FloorCheck.position, m_GroundCheckSize);
         Gizmos.DrawWireCube(BackWallCheck.position, m_BackWallCheckSize);
         Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
+        Gizmos.DrawWireCube(HeadCheck.position, m_FrontWallCheckSize);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(m_Rigidbody.velocity);
+        }
+        else
+        {
+            //Network player, receive data
+            m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
+            m_bvaluesReceived = true;
+        }
     }
 }

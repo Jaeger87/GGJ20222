@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 10847134878819806}
   - component: {fileID: 10847134878819805}
   - component: {fileID: 10847134878819807}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ControlPointTest
   m_TagString: ControlPoint
   m_Icon: {fileID: 0}
@@ -144,3 +144,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e6a08757a980045be057e6b4c66fe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  i_Team: 0
+  life: 0
