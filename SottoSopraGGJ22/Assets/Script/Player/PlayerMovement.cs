@@ -38,6 +38,15 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     [SerializeField]
     private Animator m_Animator;
+
+    [SerializeField]
+    private AudioSource m_AudioSource;
+
+    [SerializeField]
+    private AudioClip JumpSound;
+    
+    [SerializeField]
+    private AudioClip DashSound;
     
     private Rigidbody2D m_Rigidbody = null;
 
@@ -142,6 +151,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bIsJumping = true;
         m_bvaluesReceived = true;
         m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, JumpForce);
+        
+        m_AudioSource.PlayOneShot(JumpSound);
     }
     
     public void AddDashToRigidBody()
@@ -150,6 +161,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bIsDashing = true;
         m_bvaluesReceived = true;
         m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, -DashForce);
+        
+        m_AudioSource.PlayOneShot(DashSound);
     }
 
     private void CheckMovement()

@@ -16,6 +16,15 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     [SerializeField]
     private Animator m_Animator = null;
+    
+    [SerializeField]
+    private AudioSource m_AudioSource;
+
+    [SerializeField]
+    private AudioClip DieSound;
+    
+    [SerializeField]
+    private AudioClip SpawnSound;
 
     private ETeam m_TargetTeam = ETeam.Team1;
 
@@ -210,10 +219,10 @@ public class EnemyController : MonoBehaviour, IPunObservable
     [PunRPC]
     public void ChangeTeam(Vector2 diePosition)
     {
+        m_AudioSource.PlayOneShot(DieSound);
         if (PhotonNetwork.IsMasterClient)
         {
             m_bIsDead = true;
-
             StartCoroutine(AfterDeath(diePosition));
         }
         
@@ -233,6 +242,8 @@ public class EnemyController : MonoBehaviour, IPunObservable
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         
         m_bIsDead = false;
+        
+        m_AudioSource.PlayOneShot(SpawnSound);
         
         SearchObjective();
     }

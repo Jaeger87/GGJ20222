@@ -8,7 +8,16 @@ public class ControlPoint : MonoBehaviour
     private MatchManager MatchManager = null;
     [SerializeField] private ETeam i_Team;
     [SerializeField] private int life = 0;
+    
+    [SerializeField]
+    private Animator m_Animator;
+    
+    [SerializeField]
+    private AudioSource m_AudioSource;
 
+    [SerializeField]
+    private AudioClip HitSound;
+    
     private void Start()
     {
         MatchManager = FindObjectOfType<MatchManager>();
@@ -16,6 +25,8 @@ public class ControlPoint : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        m_Animator.Play("HitAnimationControlPoint");
+        m_AudioSource.PlayOneShot(HitSound);
         if (PhotonNetwork.IsMasterClient)
         {
             if (collision.gameObject.CompareTag("Enemy"))
