@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -9,32 +10,60 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject LoadingUI = null;
     
-    public InputField createInput;
-    public InputField joinInput;
+    [SerializeField]
+    private InputField RoomName;
+    
+    [SerializeField]
+    private InputField PlayerName;
 
+    private void Awake()
+    {
+        string Name = PlayerPrefs.GetString("player_name");
+        if (!String.IsNullOrEmpty(Name))
+        {
+            if (PlayerName != null)
+            {
+                PlayerName.text = Name;
+            }
+        }
+    }
 
     public void CreateRoom()
     {
-        if (createInput.text == "")
+        if (RoomName.text == "")
         {
             return;
         }
-        PhotonNetwork.JoinOrCreateRoom(joinInput.text, GetRoomConfig(), TypedLobby.Default);
+
+        SaveName();
+        
+        PhotonNetwork.JoinOrCreateRoom(RoomName.text, GetRoomConfig(), TypedLobby.Default);
         
         if (LoadingUI != null)
         {
             LoadingUI.SetActive(true);
         }
     }
-    
+
+    private void SaveName()
+    {
+        if (PlayerName != null)
+        {
+            string Name = PlayerName.text;
+            PlayerPrefs.SetString("player_name", String.IsNullOrEmpty(Name) ? "EmptyNameBruh" : Name);
+        }
+    }
+
     public void JoinRoom()
     {
-        if (joinInput.text == "")
+        if (RoomName.text == "")
         {
             return;
         }
 
-        PhotonNetwork.JoinOrCreateRoom(joinInput.text, GetRoomConfig(), TypedLobby.Default);
+        SaveName();
+        
+        PhotonNetwork.JoinOrCreateRoom(RoomName.text, GetRoomConfig(), TypedLobby.Default);
         
         if (LoadingUI != null)
         {
