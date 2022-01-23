@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IPunObservable
 {
     [SerializeField]
     private float MovementSpeed = 5f;
@@ -36,11 +36,17 @@ public class EnemyController : MonoBehaviour
     private PhotonView m_PhotonView;
 
     private Floor m_CurrentFloor;
-    
 
+
+    private bool m_bvaluesReceived = false;
     private void Awake()
     {
+        
         m_Rigidbody = GetComponent<Rigidbody2D>();
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            m_Rigidbody.isKinematic = true;
+        }
         m_PhotonView = GetComponent<PhotonView>();
         m_CurrentFloor = Floor.ZERO;
         SearchObjective();
@@ -73,30 +79,44 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        CheckCollisions();
-        if (m_bIsCollidingForward)
+        if (PhotonNetwork.IsMasterClient)
         {
-            Flip();
+            CheckCollisions();
+            if (m_bIsCollidingForward)
+            {
+                Flip();
+            }
         }
+        
     }
 
     private void FixedUpdate()
     {
 
-        if (m_Rigidbody == null)
+        if (PhotonNetwork.IsMasterClient)
         {
-            return;
+            if (m_Rigidbody == null)
+            {
+                return;
+            }
+
+            m_Rigidbody.isKinematic = m_bIsMovingOnStairs;
+
+            if (m_bIsMovingOnStairs)
+            {
+                m_Rigidbody.MovePosition(transform.position + m_TargetStairDirection * Time.fixedDeltaTime * 2f);
+                return;
+            }
+
+            if (!m_bvaluesReceived)
+            {
+                m_Rigidbody.velocity = new Vector2(
+                    (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
+                    m_Rigidbody.velocity.y);
+            }
         }
 
-        m_Rigidbody.isKinematic = m_bIsMovingOnStairs;
-        
-        if (m_bIsMovingOnStairs)
-        {
-            m_Rigidbody.MovePosition(transform.position + m_TargetStairDirection * Time.fixedDeltaTime * 2f);
-            return;
-        }
-        
-        m_Rigidbody.velocity = new Vector2((m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed, m_Rigidbody.velocity.y);
+        m_bvaluesReceived = false;
     }
 
     private void Flip()
@@ -195,5 +215,19 @@ public class EnemyController : MonoBehaviour
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
         SearchObjective();
         SetDirectionInFloor();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(m_Rigidbody.velocity);
+        }
+        else
+        {
+            //Network player, receive data
+            m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
+            m_bvaluesReceived = true;
+        }
     }
 }
