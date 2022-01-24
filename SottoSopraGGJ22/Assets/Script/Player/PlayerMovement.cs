@@ -87,6 +87,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_Controller = GetComponent<PlayerController>();
         m_Collider = GetComponent<BoxCollider2D>();
+
+        Time.timeScale = 2f;
     }
     
     public void SetAsNetworkPlayer()
@@ -115,6 +117,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 if (PlayerDamage.CheckHit())
                 {
                     OnHit();
+                    m_bIsDashing = false;
                 }
             }
         }

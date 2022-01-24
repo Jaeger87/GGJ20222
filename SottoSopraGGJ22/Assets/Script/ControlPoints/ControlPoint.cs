@@ -1,13 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using Photon.Pun;
 using UnityEngine;
 
 public class ControlPoint : MonoBehaviour
 {
     private MatchManager MatchManager = null;
-    [SerializeField] private ETeam i_Team;
-    [SerializeField] private int life = 0;
+
+    [SerializeField] private Transform HealthBarFill = null;
+    
+    [SerializeField]
+    private ETeam i_Team;
+    
+    [SerializeField] 
+    private int Life = 0;
+
+    private int m_CurrentLife = 0;
     
     [SerializeField]
     private Animator m_Animator;
@@ -17,10 +24,11 @@ public class ControlPoint : MonoBehaviour
 
     [SerializeField]
     private AudioClip HitSound;
-    
-    private void Start()
+
+    private void Awake()
     {
-        MatchManager = FindObjectOfType<MatchManager>();
+        m_CurrentLife = Life;
+        UpdateHealthBar();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -32,10 +40,13 @@ public class ControlPoint : MonoBehaviour
             if (collision.gameObject.CompareTag("Enemy"))
             {
                 //todo: Qui bisogna uccidere il nemico
-                life--;
+                m_CurrentLife--;
             
                 collision.gameObject.GetComponent<EnemyController>().Die();
-                if (life <= 0)
+
+                UpdateHealthBar();
+                
+                if (m_CurrentLife <= 0)
                 {
                     MatchManager.GameEnded(i_Team);
                 }
@@ -43,6 +54,23 @@ public class ControlPoint : MonoBehaviour
             }
         }
        
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (m_CurrentLife < 0)
+        {
+            return;
+        }
+
+        if (HealthBarFill == null)
+        {
+            return;
+        }
+
+        Vector3 LocalScale = HealthBarFill.localScale;
+        LocalScale.x = m_CurrentLife / Life;
+        HealthBarFill.localScale = LocalScale;
     }
 }
 
