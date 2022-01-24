@@ -1,4 +1,6 @@
+using System;
 using Photon.Pun;
+using Script;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour, IPunObservable
@@ -20,6 +22,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     [SerializeField]
     private float DashDeltaTime = 0.25f;
+
+    [SerializeField] 
+    private float JumpDownCollisionDisableTime = 0.25f;
     
     [SerializeField]
     private Transform HeadCheck = null;
@@ -53,19 +58,19 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     
     private Rigidbody2D m_Rigidbody = null;
 
+    private InputSystem.EMoveDirection m_Direction = InputSystem.EMoveDirection.Right;
+    
     private bool m_bIsGrounded = false;
     private bool m_bHasFrontWall = false;
     private bool m_bHasBackWall = false;
     private bool m_bHasDash = true;
-    private bool m_bLookingRight = true;
+    
     private bool m_bIsJumping = false;
     private bool m_bIsDashing = false;
     private bool m_bCanJumpDownPlatform = false;
     private bool m_bIsGoingDown = false;
     private bool m_bCanJumpOverPlatform = false;
-    
-    private bool m_LastJumpInput = false;
-    
+
     private float m_TargetMovementSpeed = 0f;
     private float m_JumpDeltaTime = 0f;
     
@@ -74,7 +79,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private PlayerController m_Controller = null;
-
     private BoxCollider2D m_Collider;
 
     // Booleani networks
@@ -88,8 +92,100 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_Controller = GetComponent<PlayerController>();
         m_Collider = GetComponent<BoxCollider2D>();
+
+        InputSystem.OnJumpEnter += OnJumpEnter;
+        InputSystem.OnDashEnter += OnDashEnter;
+        
+        InputSystem.OnMoveHorizontalEnter += OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalUpdate += OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalExit += StopMovingHorizontal;
+        
+        InputSystem.OnMoveVerticalEnter += OnMoveVertical;
+        InputSystem.OnMoveVerticalUpdate += OnMoveVertical;
+    }
+
+    private void OnDestroy()
+    {
+        InputSystem.OnJumpEnter -= OnJumpEnter;
+        InputSystem.OnDashEnter -= OnDashEnter;
+        
+        InputSystem.OnMoveHorizontalEnter -= OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalUpdate -= OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalExit -= StopMovingHorizontal;
+        
+        InputSystem.OnMoveVerticalEnter -= OnMoveVertical;
+        InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
+    }
+
+    private void OnMoveVertical(InputSystem.EMoveDirection i_Direction)
+    {
+        if (i_Direction != InputSystem.EMoveDirection.Down)
+        {
+            return;
+        }
+
+        if (!m_bIsGrounded)
+        {
+            return;
+        }
+        
+        if (!m_bIsGoingDown && m_bCanJumpDownPlatform)
+        {
+            m_bIsGoingDown = true;
+            Invoke(nameof(ResetIsGoingDown), JumpDownCollisionDisableTime);
+        }
+    }
+
+    private void ResetIsGoingDown()
+    {
+        m_bIsGoingDown = false;
+    }
+
+    private void StopMovingHorizontal(InputSystem.EMoveDirection i_Direction)
+    {
+        m_TargetMovementSpeed = 0f;
+    }
+
+    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction)
+    {
+        m_TargetMovementSpeed = (i_Direction == InputSystem.EMoveDirection.Left ? -1 : 1) * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
+
+        if (i_Direction != m_Direction)
+        {
+            Flip();
+        }
+
+        m_Direction = i_Direction;
+        
+        if (m_bHasFrontWall && m_Direction == InputSystem.EMoveDirection.Right)
+        {
+            m_TargetMovementSpeed = 0f;
+        }
+
+        if (m_bHasBackWall && m_Direction == InputSystem.EMoveDirection.Left)
+        {
+            m_TargetMovementSpeed = 0f;
+        }
+    }
+
+    private void OnJumpEnter()
+    {
+        if (m_bCanJumpOverPlatform || m_bIsGrounded) {
+            AddJumpToRigidBody();
+        }
     }
     
+    private void OnDashEnter()
+    {
+        if (!m_bHasDash)
+        {
+            return;
+        }
+
+        AddDashToRigidBody();
+        m_Controller.SendDash();
+    }
+
     public void SetAsNetworkPlayer()
     {
         m_bNetworkPlayer = true;
@@ -97,27 +193,21 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     
     private void Update()
     {
-        if (!m_bNetworkPlayer)
+        if (m_bNetworkPlayer)
         {
-            CheckMovement();
-            CheckGround();
-            CheckJump();
-            CheckDash();
+            return;
+        }
+        
+        CheckGround();
             
-            m_Controller.SetDashHintActive(DashAvailable);
+        m_Controller.SetDashHintActive(DashAvailable);
 
-            if (!m_bIsGoingDown && m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
+        if (m_bIsDashing)
+        {
+            if (PlayerDamage.CheckHit())
             {
-                m_bIsGoingDown = true;
-            }
-
-            if (m_bIsDashing)
-            {
-                if (PlayerDamage.CheckHit())
-                {
-                    OnHit();
-                    m_bIsDashing = false;
-                }
+                OnHit();
+                m_bIsDashing = false;
             }
         }
     }
@@ -135,23 +225,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         print("Player should hit");
     }
-    
-    private void CheckDash()
-    {
-        if (!m_bHasDash)
-        {
-            return;
-        }
 
-        bool dash = DashAvailable && Input.GetAxis("Vertical") < 0f;
-
-        if (dash)
-        {
-            AddDashToRigidBody();
-            m_Controller.SendDash();
-        }
-    }
-    
     public void AddJumpToRigidBody()
     {
         m_bIsGrounded = false;
@@ -172,62 +246,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_AudioSource.PlayOneShot(DashSound);
     }
 
-    private void CheckMovement()
-    {
-        m_TargetMovementSpeed = Input.GetAxis("Horizontal") * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
-        float sign = Mathf.Sign(m_TargetMovementSpeed);
-
-        if (m_TargetMovementSpeed != 0)
-        {
-            if (m_bLookingRight && sign < 0)
-            {
-                Flip();
-            }
-
-            if (!m_bLookingRight && sign > 0)
-            {
-                Flip();
-            }
-        }
-        
-        if (m_bHasFrontWall && m_TargetMovementSpeed > 0f)
-        {
-            m_TargetMovementSpeed = 0f;
-            m_Rigidbody.velocity = new Vector2(0, m_Rigidbody.velocity.y);
-        }
-
-        if (m_bHasBackWall && m_TargetMovementSpeed < 0f)
-        {
-            m_TargetMovementSpeed = 0f;
-            m_Rigidbody.velocity = new Vector2(0, m_Rigidbody.velocity.y);
-        }
-    }
-
     private void Flip()
     {
         m_Controller.Flip();
-        m_bLookingRight = !m_bLookingRight;
-    }
-
-    private void CheckJump()
-    {
-        bool jump = Input.GetAxisRaw("Jump") > 0.1f;
-
-        if (m_LastJumpInput == jump)
-        {
-            return;
-        }
-        
-        m_LastJumpInput = jump;
-        
-        if (!jump)
-        {
-            return;
-        }
-        
-        if(m_bCanJumpOverPlatform || m_bIsGrounded || m_bHasDash) {
-           AddJumpToRigidBody();
-        }
     }
 
     private void CheckGround()
@@ -244,7 +265,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 m_bIsGrounded = false;
                 m_JumpDeltaTime += Time.deltaTime;
                 m_Controller.OnCanJumpDownPlatform(false);
-                m_bIsGoingDown = false;
             }
         }
         
@@ -294,7 +314,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bHasDash = true;
         m_bIsJumping = false;
         m_JumpDeltaTime = 0f;
-        m_bIsGoingDown = false;
 
         m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
         m_Controller.OnCanJumpOverPlatform(false);

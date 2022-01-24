@@ -115,6 +115,7 @@ MonoBehaviour:
   JumpForce: 5.5
   DashForce: 15
   DashDeltaTime: 0.2
+  JumpDownCollisionDisableTime: 0.5
   HeadCheck: {fileID: 7666559899030523456}
   FloorCheck: {fileID: 1896252833330142399}
   FrontWallCheck: {fileID: 1896252833479518664}

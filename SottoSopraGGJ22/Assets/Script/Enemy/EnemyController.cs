@@ -185,6 +185,12 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             return;
         }
+
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         m_PhotonView.RPC("ChangeTeam", RpcTarget.AllBuffered, m_Rigidbody.position);
     }
 
@@ -247,6 +253,5 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             Flip();
         }
-        //m_bLookingRight = i_right;
     }
 }
