@@ -1,4 +1,3 @@
-using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -25,6 +24,8 @@ public class ControlPoint : MonoBehaviour
     [SerializeField]
     private AudioClip HitSound;
 
+    private bool m_bOffline => !PhotonNetwork.IsConnected;
+    
     private void Awake()
     {
         m_CurrentLife = Life;
@@ -35,7 +36,7 @@ public class ControlPoint : MonoBehaviour
     {
         m_Animator.Play("HitAnimationControlPoint");
         m_AudioSource.PlayOneShot(HitSound);
-        if (PhotonNetwork.IsMasterClient)
+        if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
@@ -69,7 +70,7 @@ public class ControlPoint : MonoBehaviour
         }
 
         Vector3 LocalScale = HealthBarFill.localScale;
-        LocalScale.x = m_CurrentLife / Life;
+        LocalScale.x = Life / m_CurrentLife;
         HealthBarFill.localScale = LocalScale;
     }
 }
