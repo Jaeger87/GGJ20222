@@ -164,7 +164,7 @@ MonoBehaviour:
   FrontWallCheck: {fileID: 3539432087257543365}
   FloorMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 4096
   m_Animator: {fileID: 1122236500932376074}
   m_AudioSource: {fileID: 7418203015377943312}
   DieSound: {fileID: 8300000, guid: de2a3b5882d912b43924b3d270ce8cc4, type: 3}

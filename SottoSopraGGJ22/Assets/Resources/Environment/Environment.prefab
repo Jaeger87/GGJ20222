@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 3150576693968949951}
   - component: {fileID: 3150576693968949948}
   - component: {fileID: 3150576693968949949}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,7 +273,7 @@ GameObject:
   - component: {fileID: 3150576694000429496}
   - component: {fileID: 3150576694000429497}
   - component: {fileID: 3150576694000429446}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 5100285989024507397}
   - component: {fileID: 5100285989024507396}
   - component: {fileID: 5100285989024507399}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: Floor (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1031,6 +1031,10 @@ PrefabInstance:
       propertyPath: life
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7050532770737407624, guid: 98423dd7207acb444afb1016cd647949, type: 3}
+      propertyPath: sceneViewId
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98423dd7207acb444afb1016cd647949, type: 3}
 --- !u!4 &10847134660200430 stripped
@@ -1109,9 +1113,17 @@ PrefabInstance:
       propertyPath: m_TagString
       value: ControlPoint_Team2
       objectReference: {fileID: 0}
+    - target: {fileID: 10847134878819804, guid: 98423dd7207acb444afb1016cd647949, type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 10847134878819807, guid: 98423dd7207acb444afb1016cd647949, type: 3}
       propertyPath: life
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7050532770737407624, guid: 98423dd7207acb444afb1016cd647949, type: 3}
+      propertyPath: sceneViewId
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98423dd7207acb444afb1016cd647949, type: 3}
@@ -1570,6 +1582,10 @@ PrefabInstance:
     - target: {fileID: 1662195523649465170, guid: ddca508a506288347ae76ad50f3e36cb, type: 3}
       propertyPath: m_Name
       value: Stairs (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662195523811563491, guid: ddca508a506288347ae76ad50f3e36cb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.254
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ddca508a506288347ae76ad50f3e36cb, type: 3}

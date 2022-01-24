@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
             m_PhotonView.RPC("SetupPlayer", RpcTarget.AllBuffered, i_Team);
         }
     }
-
     
     public void SendJump()
     {

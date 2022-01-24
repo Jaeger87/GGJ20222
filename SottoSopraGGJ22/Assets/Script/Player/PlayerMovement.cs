@@ -37,6 +37,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private LayerMask FloorMask;
 
     [SerializeField]
+    private LayerMask WallMask;
+
+    [SerializeField]
     private Animator m_Animator;
 
     [SerializeField]
@@ -60,6 +63,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private bool m_bIsDashing = false;
     private bool m_LastJumpInput = false;
     private bool m_bCanJumpDownPlatform = false;
+    private bool m_bIsGoingDown = false;
     
     private float m_TargetMovementSpeed = 0f;
     private float m_JumpDeltaTime = 0f;
@@ -103,7 +107,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
             if (m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
             {
-                m_Collider.enabled = false;
+                m_bIsGoingDown = true;
             }
 
             if (m_bIsDashing)
@@ -118,9 +122,10 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private void LateUpdate()
     {
+        m_Collider.enabled = !m_bIsGoingDown;
         bool bMoving = m_Rigidbody.velocity.x != 0f;
         m_Animator.SetBool("Move", bMoving && !m_bIsJumping);
-        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0);
+        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0 || m_bIsGoingDown);
         m_Animator.SetBool("Dash", m_bIsDashing);
     }
 
@@ -186,11 +191,13 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         if (m_bHasFrontWall && m_TargetMovementSpeed > 0f)
         {
             m_TargetMovementSpeed = 0f;
+            m_Rigidbody.velocity = new Vector2(0, m_Rigidbody.velocity.y);
         }
 
         if (m_bHasBackWall && m_TargetMovementSpeed < 0f)
         {
             m_TargetMovementSpeed = 0f;
+            m_Rigidbody.velocity = new Vector2(0, m_Rigidbody.velocity.y);
         }
     }
 
@@ -236,16 +243,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             Collider2D Hit = Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask);
             if(Hit != null)
             {
-                m_bIsGrounded = true;
-                m_bIsDashing = false;
-                m_bHasDash = true;
-                m_bIsJumping = false;
-                m_JumpDeltaTime = 0f;
-                m_JumpCount = 0;
-                m_Collider.enabled = true;
-                m_bCanJumpDownPlatform = Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
-                m_Controller.OnCanJumpOverPlatform(false);
-                m_Controller.OnCanJumpDownPlatform(m_bCanJumpDownPlatform);
+                OnGroundHit(Hit);
             }
             else
             {
@@ -257,7 +255,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         
         if (HeadCheck != null)
         {
-            if(Physics2D.OverlapBox(HeadCheck.position, m_GroundCheckSize, 0, FloorMask))
+            Collider2D Hit = Physics2D.OverlapBox(HeadCheck.position, m_GroundCheckSize, 0, FloorMask);
+            if(Hit != null)
             {
                 m_Controller.OnCanJumpOverPlatform(true);
             }
@@ -265,7 +264,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
         if (FrontWallCheck != null)
         {
-            if(Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, FloorMask))
+            if(Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, WallMask))
             {
                 m_bHasFrontWall = true;
             }
@@ -277,7 +276,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
         if (BackWallCheck != null)
         {
-            if(Physics2D.OverlapBox(BackWallCheck.position, m_BackWallCheckSize, 0, FloorMask))
+            if(Physics2D.OverlapBox(BackWallCheck.position, m_BackWallCheckSize, 0, WallMask))
             {
                 m_bHasBackWall = true;
             }
@@ -286,6 +285,21 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 m_bHasBackWall = false;
             }   
         }
+    }
+
+    private void OnGroundHit(Collider2D i_Hit)
+    {
+        m_bIsGrounded = true;
+        m_bIsDashing = false;
+        m_bHasDash = true;
+        m_bIsJumping = false;
+        m_JumpDeltaTime = 0f;
+        m_JumpCount = 0;
+        m_bIsGoingDown = false;
+
+        m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
+        m_Controller.OnCanJumpOverPlatform(false);
+        m_Controller.OnCanJumpDownPlatform(m_bCanJumpDownPlatform);
     }
 
     private void FixedUpdate()
