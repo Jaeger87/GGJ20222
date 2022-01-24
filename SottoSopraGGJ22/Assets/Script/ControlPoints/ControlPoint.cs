@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class ControlPoint : MonoBehaviour
 {
-    private MatchManager MatchManager = null;
+    [SerializeField] private MatchManager MatchManager = null;
 
+    private PhotonView m_PhotonView;
+    
     [SerializeField] private Transform HealthBarFill = null;
     
     [SerializeField]
@@ -28,6 +30,7 @@ public class ControlPoint : MonoBehaviour
     
     private void Awake()
     {
+        m_PhotonView = GetComponent<PhotonView>();
         m_CurrentLife = Life;
         UpdateHealthBar();
     }
@@ -40,23 +43,23 @@ public class ControlPoint : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
-                //todo: Qui bisogna uccidere il nemico
-                m_CurrentLife--;
-            
                 collision.gameObject.GetComponent<EnemyController>().Die();
-
-                UpdateHealthBar();
-                
-                if (m_CurrentLife <= 0)
-                {
-                    MatchManager.GameEnded(i_Team);
-                }
-                //todo: pensare anche a roba grafica
+                m_PhotonView.RPC("Damage", RpcTarget.AllBuffered);
             }
         }
-       
     }
-
+    
+    [PunRPC]
+    private void Damage()
+    {
+        m_CurrentLife--;
+        UpdateHealthBar();
+        if (m_CurrentLife <= 0)
+        {
+            MatchManager.GameEnded(i_Team);
+        }
+    }
+    
     private void UpdateHealthBar()
     {
         if (m_CurrentLife < 0)

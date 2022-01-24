@@ -12,11 +12,20 @@ public class SpawnManager : MonoBehaviour
     private GameObject EnemyPrefab;
 
     [SerializeField]
+    private GameObject ControlPointPrefab;
+    
+    [SerializeField]
     private Transform Team1SpawnPoint;
     
     [SerializeField]
     private Transform Team2SpawnPoint;
 
+    [SerializeField]
+    private Transform ControlPointLeftSpawnPoint;
+    
+    [SerializeField]
+    private Transform ControlPointRightSpawnPoint;
+    
     [SerializeField]
     private GameLoading GameLoadingUI;
     
@@ -59,9 +68,23 @@ public class SpawnManager : MonoBehaviour
             Player2.GetComponent<PlayerController>().SetTeam(ETeam.Team2);
         }
     }
+
+    public void SpawnControlPoints()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GameObject ControlPointLeft = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+                ControlPointLeftSpawnPoint.position,
+                Quaternion.identity);
+            GameObject ControlPointRight = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+                ControlPointRightSpawnPoint.position,
+                Quaternion.identity);
+        }
+    }
     
     public void StartGame()
     {
+        SpawnControlPoints();
         if (WaitingUI != null)
         {
             WaitingUI.SetActive(false);

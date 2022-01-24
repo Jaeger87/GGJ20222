@@ -38,18 +38,18 @@ public class MatchManager : MonoBehaviour
 
     public void GameEnded(ETeam i_Team)
     {
-        Debug.Log($"{i_Team} lose");
-        ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        m_Spawnmanager.EndGame();
-        m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
-        
-        
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
+        }
     }
     
     [PunRPC]
     public void GameOver(ETeam i_WinnerTeam)
     {
-        
+        Debug.Log($"{i_WinnerTeam} Wins");
+        m_Spawnmanager.EndGame();
         //todo: GameOver, decidere cosa mostrare
         
     }
