@@ -140,7 +140,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8670976616077726246, guid: 0315e2f4652adaa4abaecff30993dc35, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8670976616077726246, guid: 0315e2f4652adaa4abaecff30993dc35, type: 3}
       propertyPath: m_AnchorMax.x
@@ -234,11 +234,20 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8670976616077726246, guid: 0315e2f4652adaa4abaecff30993dc35, type: 3}
   m_PrefabInstance: {fileID: 9876327}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &16437575 stripped
+--- !u!4 &16437575
 Transform:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 170826164, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-  m_PrefabInstance: {fileID: 3243423104745238891}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098530520}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &64262493
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,8 +329,24 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1098530520
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 16437575}
+  m_Layer: 0
+  m_Name: 'Recovery GameObject for Transform (ID in file: 16437575)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1225056571
 GameObject:
   m_ObjectHideFlags: 0
@@ -664,6 +689,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+--- !u!4 &1671859384 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 170826164, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+  m_PrefabInstance: {fileID: 1671859383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1671859385 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2024916534, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+  m_PrefabInstance: {fileID: 1671859383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1671859386 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 723379021, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+  m_PrefabInstance: {fileID: 1671859383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1671859387 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1716755033, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+  m_PrefabInstance: {fileID: 1671859383}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1758093807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
@@ -741,11 +786,11 @@ PrefabInstance:
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Team1SpawnPoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1671859385}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Team2SpawnPoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1671859384}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Enemy1SpawnPoint
       value: 
@@ -757,11 +802,11 @@ PrefabInstance:
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: EnemyLeftSpawnPoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1671859387}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: EnemyRightSpawnPoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1671859386}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: m_EnviromentContainer
       value: 
