@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 using Photon.Pun;
 
 public class MatchManager : MonoBehaviour
 {
-    private MatchManager Instance;
+    private static MatchManager Instance;
     private PhotonView m_PhotonView;
     [SerializeField]
     private SpawnManager m_Spawnmanager = null;
@@ -30,6 +31,14 @@ public class MatchManager : MonoBehaviour
             m_PhotonView.RPC("StartGame", RpcTarget.AllBuffered);
         }
     }
+
+    public static MatchManager GetMatchManager()
+    {
+        if (Instance != null)
+            return Instance;
+        return null;
+    }
+    
     [PunRPC]
     private void StartGame()
     {

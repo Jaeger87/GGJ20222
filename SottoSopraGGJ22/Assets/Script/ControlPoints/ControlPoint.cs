@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ControlPoint : MonoBehaviour
 {
-    [SerializeField] private MatchManager MatchManager = null;
+    private MatchManager m_MatchManager = null;
 
     private PhotonView m_PhotonView;
     
@@ -32,6 +32,7 @@ public class ControlPoint : MonoBehaviour
     {
         m_PhotonView = GetComponent<PhotonView>();
         m_CurrentLife = Life;
+        m_MatchManager = MatchManager.GetMatchManager();
         UpdateHealthBar();
     }
 
@@ -56,7 +57,7 @@ public class ControlPoint : MonoBehaviour
         UpdateHealthBar();
         if (m_CurrentLife <= 0)
         {
-            MatchManager.GameEnded(i_Team);
+            m_MatchManager.GameEnded(i_Team);
         }
     }
     

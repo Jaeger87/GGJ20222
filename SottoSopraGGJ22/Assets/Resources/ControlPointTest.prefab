@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e6a08757a980045be057e6b4c66fe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MatchManager: {fileID: 0}
   HealthBarFill: {fileID: 8952229779152076989}
   i_Team: 0
   Life: 10
