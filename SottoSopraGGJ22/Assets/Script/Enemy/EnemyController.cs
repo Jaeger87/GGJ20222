@@ -1,9 +1,14 @@
 using System.Collections;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour, IPunObservable
 {
+    public enum EnemyMovement {
+        Floor, Stairs
+    };
+    
     [SerializeField]
     private float MovementSpeed = 5f;
 
@@ -27,8 +32,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private ETeam m_TargetTeam = ETeam.Team1;
 
-    private bool m_bMovingHorizontally = true;
-    private bool m_bMovingOnStairs = false;
+    private EnemyMovement m_Movement = EnemyMovement.Floor;
     private int m_VerticalDirection = 1;
 
     private Rigidbody2D m_Rigidbody;
@@ -71,7 +75,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
     {
         if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
-            m_Animator.SetBool("Climb", !m_bIsDead && m_bMovingOnStairs);
+            m_Animator.SetBool("Climb", !m_bIsDead && m_Movement == EnemyMovement.Stairs);
             m_Animator.SetBool("Die", m_bIsDead);
         }
     }
@@ -92,7 +96,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
             
             if (!m_bValuesReceived)
             {
-                if (m_bMovingHorizontally)
+                if (m_Movement == EnemyMovement.Floor)
                 {
                     m_Rigidbody.velocity = new Vector2(
                         (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
@@ -127,7 +131,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
             return;
         }
         
-        if (!m_bMovingHorizontally)
+        if (m_Movement == EnemyMovement.Stairs)
         {
             return;
         }
@@ -154,18 +158,23 @@ public class EnemyController : MonoBehaviour, IPunObservable
     {
         if(m_bOffline || PhotonNetwork.IsMasterClient)
         {
-            m_Rigidbody.velocity = Vector2.zero;
-            
-            m_bMovingHorizontally = !i_bIsStartPoint;
-            m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
+            if (m_Movement == EnemyMovement.Floor)
+            {
+                if (!i_bIsStartPoint)
+                    return;
+                m_Rigidbody.velocity = Vector2.zero;
+                m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
+                m_Movement = EnemyMovement.Stairs;
+                m_Rigidbody.isKinematic = true;
 
-            if (i_bIsStartPoint && !m_bMovingOnStairs)
+            }
+            else if (m_Movement == EnemyMovement.Stairs)
             {
+                if (i_bIsStartPoint)
+                    return;
+                m_Movement = EnemyMovement.Floor;
+                m_Rigidbody.isKinematic = false;
                 Flip();
-                m_bMovingOnStairs = true;
-            } else if (!i_bIsStartPoint)
-            {
-                m_bMovingOnStairs = false;
             }
         }
     }
