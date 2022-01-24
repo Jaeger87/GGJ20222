@@ -59,11 +59,12 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private bool m_bHasDash = true;
     private bool m_bLookingRight = true;
     private bool m_bIsJumping = false;
-    private int m_JumpCount = 0;
     private bool m_bIsDashing = false;
-    private bool m_LastJumpInput = false;
     private bool m_bCanJumpDownPlatform = false;
     private bool m_bIsGoingDown = false;
+    private bool m_bCanJumpOverPlatform = false;
+    
+    private bool m_LastJumpInput = false;
     
     private float m_TargetMovementSpeed = 0f;
     private float m_JumpDeltaTime = 0f;
@@ -105,7 +106,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             
             m_Controller.SetDashHintActive(DashAvailable);
 
-            if (m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
+            if (!m_bIsGoingDown && m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
             {
                 m_bIsGoingDown = true;
             }
@@ -141,7 +142,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             return;
         }
-        
+
         bool dash = DashAvailable && Input.GetAxis("Vertical") < 0f;
 
         if (dash)
@@ -223,17 +224,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             return;
         }
-
-        m_JumpCount++;
-
-        if (m_JumpCount < 2)
-        {
-            if (m_bIsJumping && m_Rigidbody.velocity.y < 0)
-            {
-                m_bIsJumping = false;
-            }
-            
-            AddJumpToRigidBody();
+        
+        if(m_bCanJumpOverPlatform || m_bIsGrounded || m_bHasDash) {
+           AddJumpToRigidBody();
         }
     }
 
@@ -251,6 +244,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 m_bIsGrounded = false;
                 m_JumpDeltaTime += Time.deltaTime;
                 m_Controller.OnCanJumpDownPlatform(false);
+                m_bIsGoingDown = false;
             }
         }
         
@@ -260,6 +254,11 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             if(Hit != null)
             {
                 m_Controller.OnCanJumpOverPlatform(true);
+                m_bCanJumpOverPlatform = true;
+            }
+            else
+            {
+                m_bCanJumpOverPlatform = false;
             }
         }
 
@@ -295,7 +294,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bHasDash = true;
         m_bIsJumping = false;
         m_JumpDeltaTime = 0f;
-        m_JumpCount = 0;
         m_bIsGoingDown = false;
 
         m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;

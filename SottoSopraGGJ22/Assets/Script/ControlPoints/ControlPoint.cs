@@ -70,7 +70,7 @@ public class ControlPoint : MonoBehaviour
         }
 
         Vector3 LocalScale = HealthBarFill.localScale;
-        LocalScale.x = m_CurrentLife / Life;
+        LocalScale.x = (float)m_CurrentLife / Life;
         HealthBarFill.localScale = LocalScale;
     }
 }
