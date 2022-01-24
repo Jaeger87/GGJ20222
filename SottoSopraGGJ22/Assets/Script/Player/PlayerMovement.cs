@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     [SerializeField]
     private float DashDeltaTime = 0.25f;
+
+    [SerializeField] 
+    private float JumpDownCollisionDisableTime = 0.25f;
     
     [SerializeField]
     private Transform HeadCheck = null;
@@ -76,7 +79,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Vector2 m_BackWallCheckSize = new Vector2(0.1f, 0.5f);
 
     private PlayerController m_Controller = null;
-
     private BoxCollider2D m_Collider;
 
     // Booleani networks
@@ -94,26 +96,57 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         InputSystem.OnJumpEnter += OnJumpEnter;
         InputSystem.OnDashEnter += OnDashEnter;
         
-        InputSystem.OnMoveEnter += OnMove;
-        InputSystem.OnMoveUpdate += OnMove;
-        InputSystem.OnMoveExit += StopMoving;
+        InputSystem.OnMoveHorizontalEnter += OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalUpdate += OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalExit += StopMovingHorizontal;
+        
+        InputSystem.OnMoveVerticalEnter += OnMoveVertical;
+        InputSystem.OnMoveVerticalUpdate += OnMoveVertical;
     }
 
     private void OnDestroy()
     {
         InputSystem.OnJumpEnter -= OnJumpEnter;
+        InputSystem.OnDashEnter -= OnDashEnter;
         
-        InputSystem.OnMoveEnter -= OnMove;
-        InputSystem.OnMoveUpdate -= OnMove;
-        InputSystem.OnMoveExit -= StopMoving;
+        InputSystem.OnMoveHorizontalEnter -= OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalUpdate -= OnMoveHorizontal;
+        InputSystem.OnMoveHorizontalExit -= StopMovingHorizontal;
+        
+        InputSystem.OnMoveVerticalEnter -= OnMoveVertical;
+        InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
     }
 
-    private void StopMoving(InputSystem.EMoveDirection i_Direction)
+    private void OnMoveVertical(InputSystem.EMoveDirection i_Direction)
+    {
+        if (i_Direction != InputSystem.EMoveDirection.Down)
+        {
+            return;
+        }
+
+        if (!m_bIsGrounded)
+        {
+            return;
+        }
+        
+        if (!m_bIsGoingDown && m_bCanJumpDownPlatform)
+        {
+            m_bIsGoingDown = true;
+            Invoke(nameof(ResetIsGoingDown), JumpDownCollisionDisableTime);
+        }
+    }
+
+    private void ResetIsGoingDown()
+    {
+        m_bIsGoingDown = false;
+    }
+
+    private void StopMovingHorizontal(InputSystem.EMoveDirection i_Direction)
     {
         m_TargetMovementSpeed = 0f;
     }
 
-    private void OnMove(InputSystem.EMoveDirection i_Direction)
+    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction)
     {
         m_TargetMovementSpeed = (i_Direction == InputSystem.EMoveDirection.Left ? -1 : 1) * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
 
@@ -168,11 +201,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         CheckGround();
             
         m_Controller.SetDashHintActive(DashAvailable);
-
-        if (!m_bIsGoingDown && m_bCanJumpDownPlatform && Input.GetAxis("Vertical") < 0)
-        {
-            m_bIsGoingDown = true;
-        }
 
         if (m_bIsDashing)
         {
@@ -237,7 +265,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 m_bIsGrounded = false;
                 m_JumpDeltaTime += Time.deltaTime;
                 m_Controller.OnCanJumpDownPlatform(false);
-                m_bIsGoingDown = false;
             }
         }
         
@@ -287,7 +314,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bHasDash = true;
         m_bIsJumping = false;
         m_JumpDeltaTime = 0f;
-        m_bIsGoingDown = false;
 
         m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
         m_Controller.OnCanJumpOverPlatform(false);
