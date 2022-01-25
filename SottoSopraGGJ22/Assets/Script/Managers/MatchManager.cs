@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 using Photon.Pun;
 
 public class MatchManager : MonoBehaviour
 {
-    private MatchManager Instance;
+    private static MatchManager Instance;
     private PhotonView m_PhotonView;
     [SerializeField]
     private SpawnManager m_Spawnmanager = null;
@@ -30,6 +31,14 @@ public class MatchManager : MonoBehaviour
             m_PhotonView.RPC("StartGame", RpcTarget.AllBuffered);
         }
     }
+
+    public static MatchManager GetMatchManager()
+    {
+        if (Instance != null)
+            return Instance;
+        return null;
+    }
+    
     [PunRPC]
     private void StartGame()
     {
@@ -38,18 +47,18 @@ public class MatchManager : MonoBehaviour
 
     public void GameEnded(ETeam i_Team)
     {
-        Debug.Log($"{i_Team} lose");
-        ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        m_Spawnmanager.EndGame();
-        m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
-        
-        
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
+        }
     }
     
     [PunRPC]
     public void GameOver(ETeam i_WinnerTeam)
     {
-        
+        Debug.Log($"{i_WinnerTeam} Wins");
+        m_Spawnmanager.EndGame();
         //todo: GameOver, decidere cosa mostrare
         
     }
