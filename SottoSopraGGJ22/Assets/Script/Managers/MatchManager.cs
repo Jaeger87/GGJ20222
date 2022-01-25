@@ -4,13 +4,18 @@ using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 public class MatchManager : MonoBehaviour
 {
     private static MatchManager Instance;
     private PhotonView m_PhotonView;
+    
     [SerializeField]
     private SpawnManager m_Spawnmanager = null;
+
+    [SerializeField] private GameObject VictoryPanel = null;
+    [SerializeField] private Text VictoryLabel;
 
     // Start is called before the first frame update
     void Awake()
@@ -57,10 +62,20 @@ public class MatchManager : MonoBehaviour
     [PunRPC]
     public void GameOver(ETeam i_WinnerTeam)
     {
-        Debug.Log($"{i_WinnerTeam} Wins");
         m_Spawnmanager.EndGame();
         //todo: GameOver, decidere cosa mostrare
-        
+
+        if (VictoryPanel != null)
+        {
+            VictoryPanel.SetActive(true);
+
+            if (VictoryLabel != null)
+            {
+                string playerName = i_WinnerTeam == ETeam.Team1 ? "Player 2" : "Player 1";
+                VictoryLabel.text = $"{playerName} Wins";
+            }
+        }
+
     }
     
 }

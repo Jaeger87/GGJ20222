@@ -145,8 +145,5 @@ public class SpawnManager : MonoBehaviour
             EnemyForPlayer1.GetComponent<EnemyController>().SetLookingRight(true);
             EnemyForPlayer2.GetComponent<EnemyController>().SetLookingRight(false);
         }
-        
-
-            
     }
 }

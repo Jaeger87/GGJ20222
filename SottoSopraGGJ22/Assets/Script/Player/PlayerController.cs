@@ -128,9 +128,7 @@ public class PlayerController : MonoBehaviour
 
     public void Flip()
     {
-        Vector3 scale = Graphics.transform.localScale;
-        scale.x *= -1f;
-        Graphics.transform.localScale = scale;
+        Graphics.flipX = !Graphics.flipX;
     }
 
     public void SetDashHintActive(bool i_bActive)
