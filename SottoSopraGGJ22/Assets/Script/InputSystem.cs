@@ -39,13 +39,13 @@ namespace Script
         public static Action OnDashUpdate;
         public static Action OnDashExit;
         
-        public static Action<EMoveDirection> OnMoveHorizontalEnter;
-        public static Action<EMoveDirection> OnMoveHorizontalUpdate;
-        public static Action<EMoveDirection> OnMoveHorizontalExit;
+        public static Action<EMoveDirection, float> OnMoveHorizontalEnter;
+        public static Action<EMoveDirection, float> OnMoveHorizontalUpdate;
+        public static Action<EMoveDirection, float> OnMoveHorizontalExit;
         
-        public static Action<EMoveDirection> OnMoveVerticalEnter;
-        public static Action<EMoveDirection> OnMoveVerticalUpdate;
-        public static Action<EMoveDirection> OnMoveVerticalExit;
+        public static Action<EMoveDirection, float> OnMoveVerticalEnter;
+        public static Action<EMoveDirection, float> OnMoveVerticalUpdate;
+        public static Action<EMoveDirection, float> OnMoveVerticalExit;
 
         private static Dictionary<EAction, EActionStatus> m_ActionStatus = new Dictionary<EAction, EActionStatus>()
         {
@@ -108,10 +108,10 @@ namespace Script
 
         private void HandleMoveHorizontal()
         {
-            float axis = Input.GetAxisRaw("Horizontal");
-            bool bMoving = axis != 0f;
+            float Axis = Input.GetAxisRaw("Horizontal");
+            bool bMoving = Axis != 0f;
             
-            EMoveDirection dir = axis < 0 ? EMoveDirection.Left : EMoveDirection.Right;
+            EMoveDirection Direction = Axis < 0 ? EMoveDirection.Left : EMoveDirection.Right;
             
             switch (m_ActionStatus[EAction.MoveHorizontal])
             {
@@ -120,12 +120,12 @@ namespace Script
                     if (bMoving)
                     {
                         m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Update;
-                        OnMoveHorizontalUpdate?.Invoke(dir);
+                        OnMoveHorizontalUpdate?.Invoke(Direction, Axis);
                     }
                     else
                     {
                         m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Exit;
-                        OnMoveHorizontalExit?.Invoke(dir);
+                        OnMoveHorizontalExit?.Invoke(Direction, Axis);
                     }
                     break;
                 case EActionStatus.Exit:
@@ -135,7 +135,7 @@ namespace Script
                     if (bMoving)
                     {
                         m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Enter;
-                        OnMoveHorizontalEnter?.Invoke(dir);
+                        OnMoveHorizontalEnter?.Invoke(Direction, Axis);
                     }
                     break;
                 default:
@@ -145,9 +145,9 @@ namespace Script
         }
         private void HandleMoveVertical()
         {
-            float axis = Input.GetAxisRaw("Vertical");
-            bool bMoving = axis != 0f;
-            EMoveDirection dir = axis < 0 ? EMoveDirection.Down : EMoveDirection.Up;
+            float Axis = Input.GetAxisRaw("Vertical");
+            bool bMoving = Axis != 0f;
+            EMoveDirection Direction = Axis < 0 ? EMoveDirection.Down : EMoveDirection.Up;
             
             switch (m_ActionStatus[EAction.MoveVertical])
             {
@@ -156,12 +156,12 @@ namespace Script
                     if (bMoving)
                     {
                         m_ActionStatus[EAction.MoveVertical] = EActionStatus.Update;
-                        OnMoveVerticalUpdate?.Invoke(dir);
+                        OnMoveVerticalUpdate?.Invoke(Direction, Axis);
                     }
                     else
                     {
                         m_ActionStatus[EAction.MoveVertical] = EActionStatus.Exit;
-                        OnMoveVerticalExit?.Invoke(dir);
+                        OnMoveVerticalExit?.Invoke(Direction, Axis);
                     }
                     break;
                 case EActionStatus.Exit:
@@ -171,7 +171,7 @@ namespace Script
                     if (bMoving)
                     {
                         m_ActionStatus[EAction.MoveVertical] = EActionStatus.Enter;
-                        OnMoveVerticalEnter?.Invoke(dir);
+                        OnMoveVerticalEnter?.Invoke(Direction, Axis);
                     }
                     break;
                 default:

@@ -117,8 +117,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
     }
 
-    private void OnMoveVertical(InputSystem.EMoveDirection i_Direction)
+    private void OnMoveVertical(InputSystem.EMoveDirection i_Direction, float i_Axis)
     {
+        print(i_Axis);
         if (i_Direction != InputSystem.EMoveDirection.Down)
         {
             return;
@@ -128,12 +129,19 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             return;
         }
-        
-        if (!m_bIsGoingDown && m_bCanJumpDownPlatform)
+
+        if (m_bIsGoingDown || !m_bCanJumpDownPlatform)
         {
-            m_bIsGoingDown = true;
-            Invoke(nameof(ResetIsGoingDown), JumpDownCollisionDisableTime);
+            return;
         }
+
+        if (Mathf.Abs(i_Axis) < 0.5f)
+        {
+            return;
+        } 
+        
+        m_bIsGoingDown = true;
+        Invoke(nameof(ResetIsGoingDown), JumpDownCollisionDisableTime);
     }
 
     private void ResetIsGoingDown()
@@ -141,12 +149,12 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bIsGoingDown = false;
     }
 
-    private void StopMovingHorizontal(InputSystem.EMoveDirection i_Direction)
+    private void StopMovingHorizontal(InputSystem.EMoveDirection i_Direction, float i_Axis)
     {
         m_TargetMovementSpeed = 0f;
     }
 
-    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction)
+    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction, float i_Axis)
     {
         m_TargetMovementSpeed = (i_Direction == InputSystem.EMoveDirection.Left ? -1 : 1) * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
 
@@ -156,16 +164,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         }
 
         m_Direction = i_Direction;
-        
-        if (m_bHasFrontWall && m_Direction == InputSystem.EMoveDirection.Right)
-        {
-            m_TargetMovementSpeed = 0f;
-        }
-
-        if (m_bHasBackWall && m_Direction == InputSystem.EMoveDirection.Left)
-        {
-            m_TargetMovementSpeed = 0f;
-        }
     }
 
     private void OnJumpEnter()
@@ -326,17 +324,27 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             return;
         }
-        
+
         if(!m_bvaluesReceived)
         {
             m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
         }
-        
+
         m_bvaluesReceived = false;
     }
 
     private float GetMovementForce()
     {
+        if (m_bHasFrontWall && m_Direction == InputSystem.EMoveDirection.Right)
+        {
+            return 0;
+        }
+        
+        if (m_bHasBackWall && m_Direction == InputSystem.EMoveDirection.Left)
+        {
+            return 0;
+        }
+
         float currentSpeed = m_Rigidbody.velocity.x;
         
         float targetSpeed = Mathf.Lerp(currentSpeed, m_TargetMovementSpeed, 0.2f);
