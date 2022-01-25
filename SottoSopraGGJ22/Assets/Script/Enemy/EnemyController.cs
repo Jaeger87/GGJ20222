@@ -61,8 +61,13 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void Update()
     {
+        
         if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
+            if (m_bIsDead)
+            {
+                return;
+            }
             CheckCollisions();
             if (m_bIsCollidingForward)
             {
@@ -82,13 +87,12 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void FixedUpdate()
     {
-        if (m_bIsDead)
-        {
-            return;
-        }
-        
         if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
+            if (m_bIsDead)
+            {
+                return;
+            }
             if (m_Rigidbody == null)
             {
                 return;
@@ -216,7 +220,10 @@ public class EnemyController : MonoBehaviour, IPunObservable
         yield return new WaitForSeconds(3f);
         
         Vector2 LocalPosition = diePosition;
-        LocalPosition.x *= -1f;
+        
+        float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
+        float arenaXSizeSigned = LocalPosition.x > 0 ? arenaXSize : arenaXSize * -1;
+        LocalPosition.x *= arenaXSizeSigned + LocalPosition.x ;
         transform.localPosition = LocalPosition;
         
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;

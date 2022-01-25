@@ -38,7 +38,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject WaitingUI = null;
 
-    private const float SpawnEnemyDeltaTime = 5.0f;
+    private const float SpawnEnemyDeltaTime = 20.0f;
     private float m_fTimeToNextSpawn = float.MaxValue;
 
     private bool m_bGameStarted = false;
