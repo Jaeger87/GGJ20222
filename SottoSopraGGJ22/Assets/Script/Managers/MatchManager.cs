@@ -15,6 +15,13 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject VictoryPanel = null;
     [SerializeField] private Text VictoryLabel;
+    
+    [SerializeField] private Transform m_ArenaSize;
+
+    public Transform ArenaSize
+    {
+        get => m_ArenaSize;
+    }
 
     // Start is called before the first frame update
     void Awake()

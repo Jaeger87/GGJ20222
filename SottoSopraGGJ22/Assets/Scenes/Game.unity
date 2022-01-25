@@ -505,21 +505,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3150576694210519206, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.66
-      objectReference: {fileID: 0}
-    - target: {fileID: 3150576694570895528, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.65999985
-      objectReference: {fileID: 0}
-    - target: {fileID: 3400033396069368426, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.6200007
-      objectReference: {fileID: 0}
-    - target: {fileID: 3400033396798335588, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.62
+    - target: {fileID: 170826164, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.16
       objectReference: {fileID: 0}
     - target: {fileID: 5100285989547752206, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
       propertyPath: m_Name
@@ -569,10 +557,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7048297966075962346, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
 --- !u!4 &1671859384 stripped
@@ -593,6 +577,11 @@ Transform:
 --- !u!4 &1671859387 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1716755033, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+  m_PrefabInstance: {fileID: 1671859383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1671859388 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2201525233834447242, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
   m_PrefabInstance: {fileID: 1671859383}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1758093807 stripped
@@ -723,6 +712,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}
+      propertyPath: ArenaSize
+      value: 
+      objectReference: {fileID: 1671859388}
+    - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}
+      propertyPath: m_ArenaSize
+      value: 
+      objectReference: {fileID: 1671859388}
     - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}
       propertyPath: VictoryLabel
       value: 

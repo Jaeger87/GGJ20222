@@ -30,6 +30,8 @@ public class EnemyController : MonoBehaviour, IPunObservable
     [SerializeField]
     private AudioClip SpawnSound;
 
+    [SerializeField] private GameObject SpawnSprite;
+
     private ETeam m_TargetTeam = ETeam.Team1;
 
     private EnemyMovement m_Movement = EnemyMovement.Floor;
@@ -57,12 +59,18 @@ public class EnemyController : MonoBehaviour, IPunObservable
             m_Rigidbody.isKinematic = true;
         }
         m_PhotonView = GetComponent<PhotonView>();
+        SpawnSprite.SetActive(false);
     }
 
     private void Update()
     {
+        
         if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
+            if (m_bIsDead)
+            {
+                return;
+            }
             CheckCollisions();
             if (m_bIsCollidingForward)
             {
@@ -82,13 +90,12 @@ public class EnemyController : MonoBehaviour, IPunObservable
 
     private void FixedUpdate()
     {
-        if (m_bIsDead)
-        {
-            return;
-        }
-        
         if (m_bOffline || PhotonNetwork.IsMasterClient)
         {
+            if (m_bIsDead)
+            {
+                return;
+            }
             if (m_Rigidbody == null)
             {
                 return;
@@ -206,17 +213,24 @@ public class EnemyController : MonoBehaviour, IPunObservable
         if (PhotonNetwork.IsMasterClient)
         {
             m_bIsDead = true;
-            StartCoroutine(AfterDeath(diePosition));
         }
+        
+        StartCoroutine(AfterDeath(diePosition));
         
     }
 
     private IEnumerator AfterDeath(Vector3 diePosition)
     {
-        yield return new WaitForSeconds(3f);
-        
         Vector2 LocalPosition = diePosition;
-        LocalPosition.x *= -1f;
+        
+        float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
+        float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
+        LocalPosition.x = arenaXSizeSigned + diePosition.x;
+
+        SpawnSprite.transform.position = LocalPosition;
+        SpawnSprite.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        SpawnSprite.SetActive(false);
         transform.localPosition = LocalPosition;
         
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
