@@ -55,6 +55,18 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     
     [SerializeField]
     private AudioClip DashSound;
+
+    [SerializeField] 
+    private float m_MapLimitLeft = 0;
+    
+    [SerializeField] 
+    private float m_MapLimitRight = 0;
+    
+    [SerializeField] 
+    private float m_MapLimitTop = 0;
+    
+    [SerializeField] 
+    private float m_MapLimitBottom = 0;
     
     private Rigidbody2D m_Rigidbody = null;
 
@@ -88,6 +100,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private bool DashAvailable => !m_bIsGrounded && m_JumpDeltaTime > DashDeltaTime;
 
     private PhotonView m_PhotonView = null;
+    
+    private bool m_bOffline => !PhotonNetwork.IsConnected;
 
     private void Awake()
     {
@@ -125,10 +139,53 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
         }
     }
+    
+    private void Update()
+    {
+        if (m_bNetworkPlayer)
+        {
+            return;
+        }
+        
+        CheckGround();
+            
+        m_Controller.SetDashHintActive(DashAvailable);
+
+        if (m_bIsDashing)
+        {
+            if (PlayerDamage.CheckHit())
+            {
+                OnHit();
+                m_bIsDashing = false;
+            }
+        }
+
+        ClampPosition();
+    }
+
+    private void LateUpdate()
+    {
+        m_Collider.enabled = !m_bIsGoingDown;
+        bool bMoving = m_Rigidbody.velocity.x != 0f;
+        m_Animator.SetBool("Move", bMoving && !m_bIsJumping);
+        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0 || m_bIsGoingDown);
+        m_Animator.SetBool("Dash", m_bIsDashing);
+    }
+    
+    private void ClampPosition()
+    {
+        Vector3 myPosition = transform.position;
+
+        myPosition.x = Mathf.Max(m_MapLimitLeft, myPosition.x);
+        myPosition.x = Mathf.Min(m_MapLimitRight, myPosition.x);
+        myPosition.y = Mathf.Min(m_MapLimitTop, myPosition.y);
+        myPosition.y = Mathf.Max(m_MapLimitBottom, myPosition.y);
+
+        transform.position = myPosition;
+    }
 
     private void OnMoveVertical(InputSystem.EMoveDirection i_Direction, float i_Axis)
     {
-        print(i_Axis);
         if (i_Direction != InputSystem.EMoveDirection.Down)
         {
             return;
@@ -152,6 +209,25 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bIsGoingDown = true;
         Invoke(nameof(ResetIsGoingDown), JumpDownCollisionDisableTime);
     }
+    
+    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction, float i_Axis)
+    {
+        m_TargetMovementSpeed = (i_Direction == InputSystem.EMoveDirection.Left ? -1 : 1) * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
+
+        if (i_Direction != m_Direction)
+        {
+            if (!m_bOffline)
+            {
+                m_PhotonView.RPC("Flip", RpcTarget.AllBuffered);
+            }
+            else
+            {
+                m_Controller.Flip();
+            }
+        }
+
+        m_Direction = i_Direction;
+    }
 
     private void ResetIsGoingDown()
     {
@@ -162,19 +238,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         m_TargetMovementSpeed = 0f;
     }
-
-    private void OnMoveHorizontal(InputSystem.EMoveDirection i_Direction, float i_Axis)
-    {
-        m_TargetMovementSpeed = (i_Direction == InputSystem.EMoveDirection.Left ? -1 : 1) * (m_bIsGrounded ? MovementSpeed : AirMovementSpeed);
-
-        if (i_Direction != m_Direction)
-        {
-            m_PhotonView.RPC("Flip", RpcTarget.AllBuffered);
-        }
-
-        m_Direction = i_Direction;
-    }
-
+    
     private void OnJumpEnter()
     {
         if (m_bCanJumpOverPlatform || m_bIsGrounded) {
@@ -196,36 +260,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     public void SetAsNetworkPlayer()
     {
         m_bNetworkPlayer = true;
-    }
-    
-    private void Update()
-    {
-        if (m_bNetworkPlayer)
-        {
-            return;
-        }
-        
-        CheckGround();
-            
-        m_Controller.SetDashHintActive(DashAvailable);
-
-        if (m_bIsDashing)
-        {
-            if (PlayerDamage.CheckHit())
-            {
-                OnHit();
-                m_bIsDashing = false;
-            }
-        }
-    }
-
-    private void LateUpdate()
-    {
-        m_Collider.enabled = !m_bIsGoingDown;
-        bool bMoving = m_Rigidbody.velocity.x != 0f;
-        m_Animator.SetBool("Move", bMoving && !m_bIsJumping);
-        m_Animator.SetBool("Jump", m_Rigidbody.velocity.y > 0 || m_bIsGoingDown);
-        m_Animator.SetBool("Dash", m_bIsDashing);
     }
 
     private void OnHit()

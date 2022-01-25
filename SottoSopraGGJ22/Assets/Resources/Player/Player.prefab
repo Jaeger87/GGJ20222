@@ -130,6 +130,10 @@ MonoBehaviour:
   m_AudioSource: {fileID: 8798284997915649020}
   JumpSound: {fileID: 8300000, guid: ed92e3c33c202144984f5b2e7c455a3a, type: 3}
   DashSound: {fileID: 8300000, guid: b66be6769a2fdd94fa3f664a9353a36f, type: 3}
+  m_MapLimitLeft: -8.5
+  m_MapLimitRight: 8.5
+  m_MapLimitTop: 4.6
+  m_MapLimitBottom: -4.6
 --- !u!114 &71214289315375558
 MonoBehaviour:
   m_ObjectHideFlags: 0
