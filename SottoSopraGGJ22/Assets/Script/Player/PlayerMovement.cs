@@ -87,34 +87,43 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private bool DashAvailable => !m_bIsGrounded && m_JumpDeltaTime > DashDeltaTime;
 
+    private PhotonView m_PhotonView = null;
+
     private void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_Controller = GetComponent<PlayerController>();
         m_Collider = GetComponent<BoxCollider2D>();
+        m_PhotonView = GetComponent<PhotonView>();
 
-        InputSystem.OnJumpEnter += OnJumpEnter;
-        InputSystem.OnDashEnter += OnDashEnter;
+        if (m_PhotonView.IsMine)
+        {
+            InputSystem.OnJumpEnter += OnJumpEnter;
+            InputSystem.OnDashEnter += OnDashEnter;
         
-        InputSystem.OnMoveHorizontalEnter += OnMoveHorizontal;
-        InputSystem.OnMoveHorizontalUpdate += OnMoveHorizontal;
-        InputSystem.OnMoveHorizontalExit += StopMovingHorizontal;
+            InputSystem.OnMoveHorizontalEnter += OnMoveHorizontal;
+            InputSystem.OnMoveHorizontalUpdate += OnMoveHorizontal;
+            InputSystem.OnMoveHorizontalExit += StopMovingHorizontal;
         
-        InputSystem.OnMoveVerticalEnter += OnMoveVertical;
-        InputSystem.OnMoveVerticalUpdate += OnMoveVertical;
+            InputSystem.OnMoveVerticalEnter += OnMoveVertical;
+            InputSystem.OnMoveVerticalUpdate += OnMoveVertical;   
+        }
     }
 
     private void OnDestroy()
     {
-        InputSystem.OnJumpEnter -= OnJumpEnter;
-        InputSystem.OnDashEnter -= OnDashEnter;
-        
-        InputSystem.OnMoveHorizontalEnter -= OnMoveHorizontal;
-        InputSystem.OnMoveHorizontalUpdate -= OnMoveHorizontal;
-        InputSystem.OnMoveHorizontalExit -= StopMovingHorizontal;
-        
-        InputSystem.OnMoveVerticalEnter -= OnMoveVertical;
-        InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
+        if (m_PhotonView.IsMine)
+        {
+            InputSystem.OnJumpEnter -= OnJumpEnter;
+            InputSystem.OnDashEnter -= OnDashEnter;
+
+            InputSystem.OnMoveHorizontalEnter -= OnMoveHorizontal;
+            InputSystem.OnMoveHorizontalUpdate -= OnMoveHorizontal;
+            InputSystem.OnMoveHorizontalExit -= StopMovingHorizontal;
+
+            InputSystem.OnMoveVerticalEnter -= OnMoveVertical;
+            InputSystem.OnMoveVerticalUpdate -= OnMoveVertical;
+        }
     }
 
     private void OnMoveVertical(InputSystem.EMoveDirection i_Direction, float i_Axis)
@@ -160,7 +169,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
         if (i_Direction != m_Direction)
         {
-            Flip();
+            m_PhotonView.RPC("Flip", RpcTarget.AllBuffered);
         }
 
         m_Direction = i_Direction;
@@ -244,6 +253,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_AudioSource.PlayOneShot(DashSound);
     }
 
+    [PunRPC]
     private void Flip()
     {
         m_Controller.Flip();
