@@ -1,12 +1,11 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MatchManager : MonoBehaviour
+public class MatchManager : MonoBehaviourPunCallbacks
 {
     private static MatchManager Instance;
     private PhotonView m_PhotonView;
@@ -76,6 +75,34 @@ public class MatchManager : MonoBehaviour
             }
         }
 
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (var enemy in enemies)
+        {
+            Destroy(enemy);
+        }
     }
-    
+
+    public static void LeaveRoom()
+    {
+        Instance.StartCoroutine(PhotonLeaveRoom());
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        LeaveRoom();
+    }
+
+    private static IEnumerator PhotonLeaveRoom()
+    {
+
+        PhotonNetwork.LeaveRoom();
+
+        while (PhotonNetwork.InRoom)
+        {
+            yield return null;
+        }
+        
+        SceneManager.LoadScene("Lobby");
+    }
 }
