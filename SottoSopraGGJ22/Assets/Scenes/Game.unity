@@ -505,6 +505,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170826164, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.16
+      objectReference: {fileID: 0}
     - target: {fileID: 5100285989547752206, guid: 84fed332dae9b71438cf6858f77d63f7, type: 3}
       propertyPath: m_Name
       value: Environment
@@ -710,6 +714,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}
       propertyPath: ArenaSize
+      value: 
+      objectReference: {fileID: 1671859388}
+    - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}
+      propertyPath: m_ArenaSize
       value: 
       objectReference: {fileID: 1671859388}
     - target: {fileID: 7838983976921981096, guid: 72159e209ed735f43a1a337db6cd9fe5, type: 3}

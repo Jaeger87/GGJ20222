@@ -222,8 +222,8 @@ public class EnemyController : MonoBehaviour, IPunObservable
         Vector2 LocalPosition = diePosition;
         
         float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
-        float arenaXSizeSigned = LocalPosition.x > 0 ? arenaXSize : arenaXSize * -1;
-        LocalPosition.x *= arenaXSizeSigned + LocalPosition.x ;
+        float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
+        LocalPosition.x = arenaXSizeSigned + diePosition.x ;
         transform.localPosition = LocalPosition;
         
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
