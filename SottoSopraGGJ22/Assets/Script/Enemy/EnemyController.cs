@@ -12,8 +12,9 @@ public class EnemyController : MonoBehaviour
     };
 
     [SerializeField] private float MovementSpeed = 5f;
-    
-    [SerializeField] private float MovementDeltaImprovement = 0.2f;
+    private float m_CurrentMovementSpeed = 5f;
+
+    private float MovementDeltaImprovement = 0.2f;
 
     [SerializeField] private Transform FrontWallCheck = null;
 
@@ -50,6 +51,7 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
+        m_CurrentMovementSpeed = MovementSpeed;
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
         SpawnSprite.SetActive(false);
@@ -90,14 +92,14 @@ public class EnemyController : MonoBehaviour
         if (m_Movement == EnemyMovement.Floor)
         {
             m_Rigidbody.velocity = new Vector2(
-                (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
+                (m_bLookingRight ? transform.right : -transform.right).x * m_CurrentMovementSpeed,
                 m_Rigidbody.velocity.y);
         }
         else
         {
             m_Rigidbody.velocity = new Vector2(
                 0,
-                MovementSpeed * m_VerticalDirection);
+                m_CurrentMovementSpeed * m_VerticalDirection);
         }
     }
 
@@ -208,7 +210,8 @@ public class EnemyController : MonoBehaviour
         transform.localPosition = LocalPosition;
 
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        //MovementSpeed += MovementDeltaImprovement;
+        m_CurrentMovementSpeed += MovementDeltaImprovement;
+        m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
         m_bIsDead = false;
         m_Movement = EnemyMovement.Floor;
         m_Rigidbody.isKinematic = false;

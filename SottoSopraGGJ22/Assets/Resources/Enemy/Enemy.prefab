@@ -160,7 +160,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementSpeed: 1
-  MovementDeltaImprovement: 0.2
   FrontWallCheck: {fileID: 3539432087257543365}
   WallMask:
     serializedVersion: 2
