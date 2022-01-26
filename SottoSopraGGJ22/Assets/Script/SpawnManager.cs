@@ -141,9 +141,13 @@ public class SpawnManager : MonoBehaviour
         
             GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyRightSpawnPoint.position, Quaternion.identity);
 
+            EnemyController EnemyController_p1 = EnemyForPlayer1.GetComponent<EnemyController>();
+            EnemyController EnemyController_p2 = EnemyForPlayer2.GetComponent<EnemyController>();
 
-            EnemyForPlayer1.GetComponent<EnemyController>().SetLookingRight(true);
-            EnemyForPlayer2.GetComponent<EnemyController>().SetLookingRight(false);
+            EnemyController_p1.SetLookingRight(true);
+            EnemyController_p2.SetLookingRight(false);
+            EnemyController_p1.SetTeam(ETeam.Team1);
+            EnemyController_p2.SetTeam(ETeam.Team2);
         }
     }
 }
