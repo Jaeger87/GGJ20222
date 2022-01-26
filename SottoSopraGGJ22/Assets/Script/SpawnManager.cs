@@ -12,11 +12,20 @@ public class SpawnManager : MonoBehaviour
     private GameObject EnemyPrefab;
 
     [SerializeField]
+    private GameObject ControlPointPrefab;
+    
+    [SerializeField]
     private Transform Team1SpawnPoint;
     
     [SerializeField]
     private Transform Team2SpawnPoint;
 
+    [SerializeField]
+    private Transform ControlPointLeftSpawnPoint;
+    
+    [SerializeField]
+    private Transform ControlPointRightSpawnPoint;
+    
     [SerializeField]
     private GameLoading GameLoadingUI;
     
@@ -29,7 +38,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject WaitingUI = null;
 
-    private const float SpawnEnemyDeltaTime = 5.0f;
+    private const float SpawnEnemyDeltaTime = 20.0f;
     private float m_fTimeToNextSpawn = float.MaxValue;
 
     private bool m_bGameStarted = false;
@@ -39,7 +48,7 @@ public class SpawnManager : MonoBehaviour
     {
         if (WaitingUI != null)
         {
-            WaitingUI.SetActive(true);   
+            WaitingUI.SetActive(PhotonNetwork.IsMasterClient);   
         }
     }
 
@@ -59,10 +68,27 @@ public class SpawnManager : MonoBehaviour
             Player2.GetComponent<PlayerController>().SetTeam(ETeam.Team2);
         }
     }
+
+    public void SpawnControlPoints()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GameObject ControlPointLeft = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+                ControlPointLeftSpawnPoint.position,
+                Quaternion.identity);
+            GameObject ControlPointRight = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+                ControlPointRightSpawnPoint.position,
+                Quaternion.identity);
+        }
+    }
     
     public void StartGame()
     {
-
+        SpawnControlPoints();
+        if (WaitingUI != null)
+        {
+            WaitingUI.SetActive(false);
+        }
         if (GameLoadingUI != null)
         {
             GameLoadingUI.gameObject.SetActive(true);
@@ -82,14 +108,10 @@ public class SpawnManager : MonoBehaviour
         m_bGameStarted = true;
         m_fTimeToNextSpawn = SpawnEnemyDeltaTime;
 
-        if (WaitingUI != null)
-        {
-            WaitingUI.SetActive(false);
-        }
-
         if (GameLoadingUI != null)
         {
             GameLoadingUI.CountdownEnded -= AfterStartGame;
+            GameLoadingUI.gameObject.SetActive(false);
         }
     }
 
@@ -119,12 +141,13 @@ public class SpawnManager : MonoBehaviour
         
             GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyRightSpawnPoint.position, Quaternion.identity);
 
+            EnemyController EnemyController_p1 = EnemyForPlayer1.GetComponent<EnemyController>();
+            EnemyController EnemyController_p2 = EnemyForPlayer2.GetComponent<EnemyController>();
 
-            EnemyForPlayer1.GetComponent<EnemyController>().SetLookingRight(true);
-            EnemyForPlayer2.GetComponent<EnemyController>().SetLookingRight(false);
+            EnemyController_p1.SetLookingRight(true);
+            EnemyController_p2.SetLookingRight(false);
+            EnemyController_p1.SetTeam(ETeam.Team1);
+            EnemyController_p2.SetTeam(ETeam.Team2);
         }
-        
-
-            
     }
 }

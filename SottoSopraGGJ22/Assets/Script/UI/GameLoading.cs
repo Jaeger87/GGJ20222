@@ -22,7 +22,9 @@ public class GameLoading : MonoBehaviour
     {
         int currentCountdown = CountdownAmount;
         
-        while (--currentCountdown > 0)
+        CountdownLabel.text = currentCountdown.ToString();
+        
+        while (--currentCountdown >= 0)
         {
             yield return new WaitForSeconds(1f);
             CountdownLabel.text = currentCountdown.ToString();
