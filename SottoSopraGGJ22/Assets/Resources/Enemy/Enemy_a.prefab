@@ -170,6 +170,7 @@ MonoBehaviour:
   SpawnSound: {fileID: 8300000, guid: 4d0b599166b355a45b8230571bdec204, type: 3}
   SpawnSprite: {fileID: 6306563392732126356}
   m_TargetTeam: 0
+  m_bLookingRight: 1
 --- !u!114 &3803102326549632338
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -32,6 +32,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject SpawnSprite;
 
     [SerializeField] private ETeam m_TargetTeam = ETeam.Team1;
+    
+    [SerializeField] private bool m_bLookingRight = true;
 
     private EnemyMovement m_Movement = EnemyMovement.Floor;
     private int m_VerticalDirection = 1;
@@ -41,8 +43,7 @@ public class EnemyController : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
-
-    private bool m_bLookingRight = true;
+    
     private bool m_bIsDead = false;
 
     private PhotonView m_PhotonView;

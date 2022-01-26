@@ -9,8 +9,11 @@ public class SpawnManager : MonoBehaviour
     private GameObject PlayerPrefab;
     
     [SerializeField]
-    private GameObject EnemyPrefab;
+    private GameObject EnemyPrefabLeft;
 
+    [SerializeField]
+    private GameObject EnemyPrefabRight;
+    
     [SerializeField]
     private GameObject ControlPointPrefab;
     
@@ -137,17 +140,22 @@ public class SpawnManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyLeftSpawnPoint.position, Quaternion.identity);
-        
-            GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefab.name, EnemyRightSpawnPoint.position, Quaternion.identity);
+            GameObject EnemyForPlayer1 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefabLeft.name,
+                EnemyLeftSpawnPoint.position, Quaternion.identity);
 
+            GameObject EnemyForPlayer2 = PhotonNetwork.Instantiate("Enemy/" + EnemyPrefabRight.name,
+                EnemyRightSpawnPoint.position, Quaternion.identity);
+
+            /* Il codice da qui non è sincronizzato tra i client
             EnemyController EnemyController_p1 = EnemyForPlayer1.GetComponent<EnemyController>();
             EnemyController EnemyController_p2 = EnemyForPlayer2.GetComponent<EnemyController>();
 
+            
             EnemyController_p1.SetLookingRight(true);
             EnemyController_p2.SetLookingRight(false);
             EnemyController_p1.SetTeam(ETeam.Team1);
             EnemyController_p2.SetTeam(ETeam.Team2);
+            */
         }
     }
 }
