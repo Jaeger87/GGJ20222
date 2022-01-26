@@ -12,6 +12,8 @@ public class EnemyController : MonoBehaviour
     };
 
     [SerializeField] private float MovementSpeed = 5f;
+    
+    [SerializeField] private float MovementDeltaImprovement = 0.2f;
 
     [SerializeField] private Transform FrontWallCheck = null;
 
@@ -44,8 +46,7 @@ public class EnemyController : MonoBehaviour
     private PhotonView m_PhotonView;
 
     private bool m_bOffline => !PhotonNetwork.IsConnected;
-
-    private bool m_bValuesReceived = false;
+    
 
     private void Awake()
     {
@@ -85,25 +86,19 @@ public class EnemyController : MonoBehaviour
         {
             return;
         }
-
-        if (!m_bValuesReceived)
+        
+        if (m_Movement == EnemyMovement.Floor)
         {
-            if (m_Movement == EnemyMovement.Floor)
-            {
-                m_Rigidbody.velocity = new Vector2(
-                    (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
-                    m_Rigidbody.velocity.y);
-            }
-            else
-            {
-                m_Rigidbody.velocity = new Vector2(
-                    0,
-                    MovementSpeed * m_VerticalDirection);
-            }
+            m_Rigidbody.velocity = new Vector2(
+                (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
+                m_Rigidbody.velocity.y);
         }
-
-
-        m_bValuesReceived = false;
+        else
+        {
+            m_Rigidbody.velocity = new Vector2(
+                0,
+                MovementSpeed * m_VerticalDirection);
+        }
     }
 
     private void Flip()
@@ -199,6 +194,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AfterDeath(Vector3 diePosition)
     {
+        m_Rigidbody.velocity = Vector2.zero;
         Vector2 LocalPosition = diePosition;
 
         float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
@@ -212,9 +208,10 @@ public class EnemyController : MonoBehaviour
         transform.localPosition = LocalPosition;
 
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-
+        //MovementSpeed += MovementDeltaImprovement;
         m_bIsDead = false;
         m_Movement = EnemyMovement.Floor;
+        m_Rigidbody.isKinematic = false;
         m_AudioSource.PlayOneShot(SpawnSound);
     }
 
