@@ -1,86 +1,80 @@
-using System;
 using System.Collections;
-using UnityEngine;
 using Photon.Pun;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class EnemyController : MonoBehaviour, IPunObservable
+public class EnemyController : MonoBehaviour
 {
-    [SerializeField]
-    private float MovementSpeed = 5f;
+    public enum EnemyMovement
+    {
+        Floor,
+        Stairs
+    };
 
-    [SerializeField]
-    private Transform FrontWallCheck = null;
-    
-    [SerializeField]
-    private LayerMask FloorMask;
+    [SerializeField] private float MovementSpeed = 5f;
+    private float m_CurrentMovementSpeed = 5f;
 
-    [SerializeField]
-    private Animator m_Animator = null;
+    private float MovementDeltaImprovement = 0.2f;
+
+    [SerializeField] private Transform FrontWallCheck = null;
+
+    [SerializeField] private LayerMask WallMask;
+
+    [SerializeField] private Animator m_Animator = null;
+
+    [SerializeField] private AudioSource m_AudioSource;
+
+    [SerializeField] private AudioClip DieSound;
+
+    [SerializeField] private AudioClip SpawnSound;
+
+    [SerializeField] private GameObject SpawnSprite;
 
     private ETeam m_TargetTeam = ETeam.Team1;
 
+    private EnemyMovement m_Movement = EnemyMovement.Floor;
+    private int m_VerticalDirection = 1;
+
     private Rigidbody2D m_Rigidbody;
-    
+
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
 
     private bool m_bLookingRight = true;
-    private bool m_bIsMovingOnStairs = false;
     private bool m_bIsDead = false;
 
-    private bool m_bFloorCheckEnabled = true; 
-
-    private Vector3 m_ObjectivePosition = Vector3.zero;
-    
-    private Vector3 m_TargetStairDirection;
-    private EStairPoint m_StairPointClimbStart = EStairPoint.None;
-    
     private PhotonView m_PhotonView;
 
     private bool m_bOffline => !PhotonNetwork.IsConnected;
+    
 
-    private bool m_bvaluesReceived = false;
     private void Awake()
     {
+        m_CurrentMovementSpeed = MovementSpeed;
         m_Rigidbody = GetComponent<Rigidbody2D>();
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            m_Rigidbody.isKinematic = true;
-        }
         m_PhotonView = GetComponent<PhotonView>();
-        SearchObjective();
-    }
-
-    private void SearchObjective()
-    {
-        GameObject Objective = GameObject.FindWithTag($"ControlPoint_{m_TargetTeam}");
-
-        if (Objective != null)
-        {
-            m_ObjectivePosition = Objective.transform.position;
-        }
+        SpawnSprite.SetActive(false);
     }
 
     private void Update()
     {
-        if (m_bOffline || PhotonNetwork.IsMasterClient)
+        if (m_bIsDead)
         {
-            CheckCollisions();
-            if (m_bIsCollidingForward)
-            {
-                Flip();
-            }
+            return;
+        }
+
+        CheckCollisions();
+        if (m_bIsCollidingForward)
+        {
+            Flip();
         }
     }
 
     private void LateUpdate()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            m_Animator.SetBool("Climb", !m_bIsDead && m_bIsMovingOnStairs);
-            m_Animator.SetBool("Die", m_bIsDead);
-        }
+        m_Animator.SetBool("Climb", !m_bIsDead && m_Movement == EnemyMovement.Stairs);
+        m_Animator.SetBool("Die", m_bIsDead);
     }
 
     private void FixedUpdate()
@@ -89,31 +83,24 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             return;
         }
-        
-        if (m_bOffline || PhotonNetwork.IsMasterClient)
+
+        if (m_Rigidbody == null)
         {
-            if (m_Rigidbody == null)
-            {
-                return;
-            }
-
-            m_Rigidbody.isKinematic = m_bIsMovingOnStairs;
-
-            if (m_bIsMovingOnStairs)
-            {
-                m_Rigidbody.MovePosition(transform.position + m_TargetStairDirection * Time.fixedDeltaTime * 2f);
-                return;
-            }
-
-            if (!m_bvaluesReceived)
-            {
-                m_Rigidbody.velocity = new Vector2(
-                    (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
-                    m_Rigidbody.velocity.y);
-            }
+            return;
         }
-
-        m_bvaluesReceived = false;
+        
+        if (m_Movement == EnemyMovement.Floor)
+        {
+            m_Rigidbody.velocity = new Vector2(
+                (m_bLookingRight ? transform.right : -transform.right).x * m_CurrentMovementSpeed,
+                m_Rigidbody.velocity.y);
+        }
+        else
+        {
+            m_Rigidbody.velocity = new Vector2(
+                0,
+                m_CurrentMovementSpeed * m_VerticalDirection);
+        }
     }
 
     private void Flip()
@@ -121,7 +108,7 @@ public class EnemyController : MonoBehaviour, IPunObservable
         Vector3 LocalScale = transform.localScale;
         LocalScale.x *= -1;
         transform.localScale = LocalScale;
-        
+
         m_bLookingRight = !m_bLookingRight;
     }
 
@@ -131,15 +118,15 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             return;
         }
-        
-        if (!m_bFloorCheckEnabled)
+
+        if (m_Movement == EnemyMovement.Stairs)
         {
             return;
         }
-        
+
         if (FrontWallCheck != null)
         {
-            if (Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, FloorMask))
+            if (Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, WallMask))
             {
                 m_bIsCollidingForward = true;
             }
@@ -155,42 +142,27 @@ public class EnemyController : MonoBehaviour, IPunObservable
         Gizmos.DrawWireCube(FrontWallCheck.position, m_FrontWallCheckSize);
     }
 
-    public void OnStairsEnter(Vector3 i_StartPoint, Vector3 i_EndPoint, EStairPoint i_eStairPoint)
+    public void OnStairsEnter(bool i_bIsStartPoint, Stairs.EStairDirection i_Direction)
     {
-        if(PhotonNetwork.IsMasterClient)
-        {
-            if (i_eStairPoint == m_StairPointClimbStart)
+
+            if (m_Movement == EnemyMovement.Floor)
             {
-                 return;
+                if (!i_bIsStartPoint)
+                    return;
+                m_Rigidbody.velocity = Vector2.zero;
+                m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
+                m_Movement = EnemyMovement.Stairs;
+                m_Rigidbody.isKinematic = true;
+            }
+            else if (m_Movement == EnemyMovement.Stairs)
+            {
+                if (i_bIsStartPoint)
+                    return;
+                m_Movement = EnemyMovement.Floor;
+                m_Rigidbody.isKinematic = false;
+                Flip();
             }
         
-            if (m_bIsMovingOnStairs)
-            {
-                 m_StairPointClimbStart = i_eStairPoint;
-                 OnStairsExit();
-                 return;
-            }
-
-            m_StairPointClimbStart = i_eStairPoint;
-
-            m_bFloorCheckEnabled = false;
-
-            m_bIsMovingOnStairs = true;
-            m_Rigidbody.velocity = Vector2.zero;
-        
-            Vector3 LocalPosition = transform.localPosition;
-            LocalPosition.x = i_StartPoint.x;
-            transform.position = LocalPosition;
-
-            m_TargetStairDirection = i_EndPoint.y > transform.position.y ? Vector3.up : Vector3.down;
-        }
-    }
-
-    public void OnStairsExit()
-    {
-        m_bIsMovingOnStairs = false;
-        m_bFloorCheckEnabled = true;
-        Flip();
     }
 
     public void OnHit()
@@ -199,67 +171,59 @@ public class EnemyController : MonoBehaviour, IPunObservable
         {
             return;
         }
+
+        if (m_bOffline)
+        {
+            return;
+        }
+
         m_PhotonView.RPC("ChangeTeam", RpcTarget.AllBuffered, m_Rigidbody.position);
     }
 
     public void Die()
     {
-        PhotonNetwork.Destroy(this.gameObject);
+        if(PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(this.gameObject);
     }
-    
+
     [PunRPC]
     public void ChangeTeam(Vector2 diePosition)
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            m_bIsDead = true;
-
-            StartCoroutine(AfterDeath(diePosition));
-        }
-        
+        m_AudioSource.PlayOneShot(DieSound);
+        m_bIsDead = true;
+        StartCoroutine(AfterDeath(diePosition));
     }
 
     private IEnumerator AfterDeath(Vector3 diePosition)
     {
-        yield return new WaitForSeconds(3f);
-        
+        m_Rigidbody.velocity = Vector2.zero;
         Vector2 LocalPosition = diePosition;
-        LocalPosition.x *= -1f;
+
+        float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
+        float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
+        LocalPosition.x = arenaXSizeSigned + diePosition.x;
+
+        SpawnSprite.transform.position = LocalPosition;
+        SpawnSprite.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        SpawnSprite.SetActive(false);
         transform.localPosition = LocalPosition;
-            
-        m_TargetStairDirection = Vector3.zero;
-        m_bIsMovingOnStairs = false;
-        m_StairPointClimbStart = EStairPoint.None;
+
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        
+        m_CurrentMovementSpeed += MovementDeltaImprovement;
+        m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
         m_bIsDead = false;
-        
-        SearchObjective();
+        m_Movement = EnemyMovement.Floor;
+        m_Rigidbody.isKinematic = false;
+        m_AudioSource.PlayOneShot(SpawnSound);
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(m_Rigidbody.velocity);
-            stream.SendNext(m_bLookingRight);
-        }
-        else
-        {
-            //Network player, receive data
-            m_Rigidbody.velocity = (Vector2)stream.ReceiveNext();
-            bool direction = (bool) stream.ReceiveNext();
-            if (direction != m_bLookingRight)
-            {
-                Flip();
-            }
-            m_bvaluesReceived = true;
-            
-        }
-    }
 
     public void SetLookingRight(bool i_right)
     {
-        m_bLookingRight = i_right;
+        if (!i_right)
+        {
+            Flip();
+        }
     }
 }

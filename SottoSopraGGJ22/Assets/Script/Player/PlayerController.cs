@@ -30,17 +30,28 @@ public class PlayerController : MonoBehaviour
 
     private PlayerMovement m_PlayerMovement;
     
+    private bool m_bOffline => !PhotonNetwork.IsConnected;
+    
     public void SetTeam(ETeam i_Team)
     {
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         if (m_PhotonView.IsMine)
         {
             m_PhotonView.RPC("SetupPlayer", RpcTarget.AllBuffered, i_Team);
         }
     }
-
     
     public void SendJump()
     {
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         if (m_PhotonView.IsMine)
         {
             m_PhotonView.RPC("AddJumpForce", RpcTarget.AllBuffered);
@@ -48,6 +59,11 @@ public class PlayerController : MonoBehaviour
     }
     public void SendDash()
     {
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         if (m_PhotonView.IsMine)
         {
             m_PhotonView.RPC("AddDashForce", RpcTarget.AllBuffered);
@@ -57,6 +73,11 @@ public class PlayerController : MonoBehaviour
     [PunRPC]
     public void AddJumpForce()
     {
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         if (!m_PhotonView.IsMine)
         {
             m_PlayerMovement.AddJumpToRigidBody();
@@ -66,6 +87,11 @@ public class PlayerController : MonoBehaviour
     [PunRPC]
     public void AddDashForce()
     {
+        if (m_bOffline)
+        {
+            return;
+        }
+        
         if (!m_PhotonView.IsMine)
         {
             m_PlayerMovement.AddDashToRigidBody();
@@ -102,9 +128,7 @@ public class PlayerController : MonoBehaviour
 
     public void Flip()
     {
-        Vector3 scale = Graphics.transform.localScale;
-        scale.x *= -1f;
-        Graphics.transform.localScale = scale;
+        Graphics.flipX = !Graphics.flipX;
     }
 
     public void SetDashHintActive(bool i_bActive)

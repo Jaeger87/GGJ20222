@@ -47,6 +47,8 @@ MonoBehaviour:
   - GameOver
   - ChangeTeam
   - StartGame
+  - Damage
+  - Flip
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
