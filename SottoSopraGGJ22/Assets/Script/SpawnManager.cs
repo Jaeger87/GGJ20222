@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -15,6 +16,9 @@ public class SpawnManager : MonoBehaviour
     
     [SerializeField]
     private Transform Team2SpawnPoint;
+
+    [SerializeField]
+    private GameLoading GameLoadingUI;
     
     [FormerlySerializedAs("Enemy1SpawnPoint")] [SerializeField]
     private Transform EnemyLeftSpawnPoint;
@@ -22,11 +26,22 @@ public class SpawnManager : MonoBehaviour
     [FormerlySerializedAs("Enemy2SpawnPoint")] [SerializeField]
     private Transform EnemyRightSpawnPoint;
 
+    [SerializeField]
+    private GameObject WaitingUI = null;
+
     private const float SpawnEnemyDeltaTime = 5.0f;
     private float m_fTimeToNextSpawn = float.MaxValue;
 
     private bool m_bGameStarted = false;
     private bool m_bGameEnd = false;
+
+    private void Start()
+    {
+        if (WaitingUI != null)
+        {
+            WaitingUI.SetActive(true);   
+        }
+    }
 
     public void SpawnPlayers()
     {
@@ -47,10 +62,35 @@ public class SpawnManager : MonoBehaviour
     
     public void StartGame()
     {
+
+        if (GameLoadingUI != null)
+        {
+            GameLoadingUI.gameObject.SetActive(true);
+            GameLoadingUI.StartCountdown();
+            GameLoadingUI.CountdownEnded += AfterStartGame;
+        }
+        else
+        {
+            AfterStartGame();
+        }
+    }
+
+    private void AfterStartGame()
+    {
         SpawnPlayers();
         SpawnEnemy();
         m_bGameStarted = true;
         m_fTimeToNextSpawn = SpawnEnemyDeltaTime;
+
+        if (WaitingUI != null)
+        {
+            WaitingUI.SetActive(false);
+        }
+
+        if (GameLoadingUI != null)
+        {
+            GameLoadingUI.CountdownEnded -= AfterStartGame;
+        }
     }
 
     public void EndGame()
