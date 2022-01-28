@@ -660,9 +660,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9876328}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyPrefab_a
+      value: 
+      objectReference: {fileID: 3803102326549632334, guid: 7118d032f49638c4c80cca2afe6131b6, type: 3}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyPrefab_b
+      value: 
+      objectReference: {fileID: 3803102326549632334, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: GameLoadingUI
       value: 
       objectReference: {fileID: 1590766539}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyPrefabLeft
+      value: 
+      objectReference: {fileID: 3803102326549632334, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: Team1SpawnPoint
       value: 
@@ -679,6 +691,10 @@ PrefabInstance:
       propertyPath: Enemy2SpawnPoint
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: EnemyPrefabRight
+      value: 
+      objectReference: {fileID: 1835199266242749111, guid: 94098c7a212bdfd40bee90a4df7f06ae, type: 3}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: ControlPointPrefab
       value: 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Photon.Pun;
 using UnityEngine;
@@ -12,6 +13,9 @@ public class EnemyController : MonoBehaviour
     };
 
     [SerializeField] private float MovementSpeed = 5f;
+    private float m_CurrentMovementSpeed = 5f;
+
+    private float MovementDeltaImprovement = 0.2f;
 
     [SerializeField] private Transform FrontWallCheck = null;
 
@@ -27,7 +31,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private GameObject SpawnSprite;
 
-    private ETeam m_TargetTeam = ETeam.Team1;
+    [SerializeField] private ETeam m_TargetTeam = ETeam.Team1;
+    
+    [SerializeField] private bool m_bLookingRight = true;
 
     private EnemyMovement m_Movement = EnemyMovement.Floor;
     private int m_VerticalDirection = 1;
@@ -37,21 +43,38 @@ public class EnemyController : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
-
-    private bool m_bLookingRight = true;
+    
     private bool m_bIsDead = false;
 
     private PhotonView m_PhotonView;
 
     private bool m_bOffline => !PhotonNetwork.IsConnected;
-
-    private bool m_bValuesReceived = false;
+    
 
     private void Awake()
     {
+        m_CurrentMovementSpeed = MovementSpeed;
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
         SpawnSprite.SetActive(false);
+    }
+
+    private void Start()
+    {
+        SetAnimatorLayer();
+    }
+
+    private void SetAnimatorLayer()
+    {
+        if (m_TargetTeam == ETeam.Team1) {
+            m_Animator.SetLayerWeight(0, 1f);
+            m_Animator.SetLayerWeight(1, 0f);
+        } 
+        else
+        {
+            m_Animator.SetLayerWeight(0, 0f);
+            m_Animator.SetLayerWeight(1, 1f);
+        }
     }
 
     private void Update()
@@ -85,25 +108,19 @@ public class EnemyController : MonoBehaviour
         {
             return;
         }
-
-        if (!m_bValuesReceived)
+        
+        if (m_Movement == EnemyMovement.Floor)
         {
-            if (m_Movement == EnemyMovement.Floor)
-            {
-                m_Rigidbody.velocity = new Vector2(
-                    (m_bLookingRight ? transform.right : -transform.right).x * MovementSpeed,
-                    m_Rigidbody.velocity.y);
-            }
-            else
-            {
-                m_Rigidbody.velocity = new Vector2(
-                    0,
-                    MovementSpeed * m_VerticalDirection);
-            }
+            m_Rigidbody.velocity = new Vector2(
+                (m_bLookingRight ? transform.right : -transform.right).x * m_CurrentMovementSpeed,
+                m_Rigidbody.velocity.y);
         }
-
-
-        m_bValuesReceived = false;
+        else
+        {
+            m_Rigidbody.velocity = new Vector2(
+                0,
+                m_CurrentMovementSpeed * m_VerticalDirection);
+        }
     }
 
     private void Flip()
@@ -199,6 +216,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AfterDeath(Vector3 diePosition)
     {
+        m_Rigidbody.velocity = Vector2.zero;
         Vector2 LocalPosition = diePosition;
 
         float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
@@ -212,10 +230,19 @@ public class EnemyController : MonoBehaviour
         transform.localPosition = LocalPosition;
 
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        SetAnimatorLayer();
 
+        m_CurrentMovementSpeed += MovementDeltaImprovement;
+        m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
         m_bIsDead = false;
         m_Movement = EnemyMovement.Floor;
+        m_Rigidbody.isKinematic = false;
         m_AudioSource.PlayOneShot(SpawnSound);
+    }
+
+    public void SetTeam(ETeam team)
+    {
+        m_TargetTeam = team;
     }
 
 
