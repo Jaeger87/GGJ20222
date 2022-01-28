@@ -10,7 +10,7 @@ public class ControlPoint : MonoBehaviour
     [SerializeField] private Transform HealthBarFill = null;
     
     [SerializeField]
-    private ETeam i_Team;
+    private ETeam m_Team;
     
     [SerializeField] 
     private int Life = 0;
@@ -27,12 +27,18 @@ public class ControlPoint : MonoBehaviour
     private AudioClip HitSound;
 
     private bool m_bOffline => !PhotonNetwork.IsConnected;
+
+    public void SetTeam(ETeam i_Team)
+    {
+        m_Team = i_Team;
+    }
     
     private void Awake()
     {
         m_PhotonView = GetComponent<PhotonView>();
         m_CurrentLife = Life;
         m_MatchManager = MatchManager.GetMatchManager();
+        
         UpdateHealthBar();
     }
 
@@ -57,7 +63,7 @@ public class ControlPoint : MonoBehaviour
         UpdateHealthBar();
         if (m_CurrentLife <= 0)
         {
-            m_MatchManager.GameEnded(i_Team);
+            m_MatchManager.GameEnded(m_Team);
         }
     }
     

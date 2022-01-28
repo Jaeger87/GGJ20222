@@ -79,9 +79,12 @@ public class SpawnManager : MonoBehaviour
             GameObject ControlPointLeft = PhotonNetwork.Instantiate(ControlPointPrefab.name,
                 ControlPointLeftSpawnPoint.position,
                 Quaternion.identity);
+
             GameObject ControlPointRight = PhotonNetwork.Instantiate(ControlPointPrefab.name,
                 ControlPointRightSpawnPoint.position,
                 Quaternion.identity);
+            
+            ControlPointRight.GetComponent<ControlPoint>().SetTeam(ETeam.Team2);
         }
     }
     
