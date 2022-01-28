@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealthBarFill: {fileID: 8952229779152076989}
-  i_Team: 0
+  m_Team: 0
   Life: 10
   m_Animator: {fileID: 7415193476702266344}
   m_AudioSource: {fileID: 7814936573844805124}

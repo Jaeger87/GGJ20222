@@ -1,8 +1,11 @@
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine.SceneManagement;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
+    private TypedLobby customLobby = new TypedLobby("hackYouLobby", LobbyType.Default);
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -11,7 +14,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinLobby();
+        PhotonNetwork.JoinLobby(customLobby);
     }
 
     public override void OnJoinedLobby()
