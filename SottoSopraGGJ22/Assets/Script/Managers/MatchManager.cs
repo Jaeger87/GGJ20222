@@ -60,8 +60,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
+            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, i_Team);
         }
     }
     
