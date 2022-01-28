@@ -76,7 +76,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
             if (VictoryLabel != null)
             {
-                string playerName = i_WinnerTeam == ETeam.Team1 ? "Player 2" : "Player 1";
+                string playerName = i_WinnerTeam == ETeam.Team1 ? "Pear" : "Doors";
                 VictoryLabel.text = $"{playerName} Wins";
             }
         }
