@@ -70,10 +70,35 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
             LoadingUI.SetActive(true);
         }
     }
+    
+    public void JoinRoom(string i_RoomID)
+    {
+        SaveName();
+        
+        PhotonNetwork.JoinOrCreateRoom(i_RoomID.ToLower(), GetRoomConfig(), TypedLobby.Default);
+        
+        if (LoadingUI != null)
+        {
+            LoadingUI.SetActive(true);
+        }
+    }
+    
+    public void JoinRandomRoom()
+    {
+        SaveName();
+
+        PhotonNetwork.JoinRandomRoom();
+        
+        if (LoadingUI != null)
+        {
+            LoadingUI.SetActive(true);
+        }
+    }
 
     private RoomOptions GetRoomConfig()
     {
         RoomOptions roomOptions = new RoomOptions();
+        
         roomOptions.MaxPlayers = 2;
         roomOptions.IsVisible = true;
 

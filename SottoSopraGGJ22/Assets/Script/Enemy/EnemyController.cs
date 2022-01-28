@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Photon.Pun;
 using UnityEngine;
@@ -30,7 +31,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private GameObject SpawnSprite;
 
-    private ETeam m_TargetTeam = ETeam.Team1;
+    [SerializeField] private ETeam m_TargetTeam = ETeam.Team1;
+    
+    [SerializeField] private bool m_bLookingRight = true;
 
     private EnemyMovement m_Movement = EnemyMovement.Floor;
     private int m_VerticalDirection = 1;
@@ -40,8 +43,7 @@ public class EnemyController : MonoBehaviour
     private Vector2 m_FrontWallCheckSize = new Vector2(0.1f, 0.3f);
 
     private bool m_bIsCollidingForward = false;
-
-    private bool m_bLookingRight = true;
+    
     private bool m_bIsDead = false;
 
     private PhotonView m_PhotonView;
@@ -55,6 +57,24 @@ public class EnemyController : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
         SpawnSprite.SetActive(false);
+    }
+
+    private void Start()
+    {
+        SetAnimatorLayer();
+    }
+
+    private void SetAnimatorLayer()
+    {
+        if (m_TargetTeam == ETeam.Team1) {
+            m_Animator.SetLayerWeight(0, 1f);
+            m_Animator.SetLayerWeight(1, 0f);
+        } 
+        else
+        {
+            m_Animator.SetLayerWeight(0, 0f);
+            m_Animator.SetLayerWeight(1, 1f);
+        }
     }
 
     private void Update()
@@ -210,12 +230,19 @@ public class EnemyController : MonoBehaviour
         transform.localPosition = LocalPosition;
 
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        SetAnimatorLayer();
+
         m_CurrentMovementSpeed += MovementDeltaImprovement;
         m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
         m_bIsDead = false;
         m_Movement = EnemyMovement.Floor;
         m_Rigidbody.isKinematic = false;
         m_AudioSource.PlayOneShot(SpawnSound);
+    }
+
+    public void SetTeam(ETeam team)
+    {
+        m_TargetTeam = team;
     }
 
 

@@ -197,20 +197,13 @@ PrefabInstance:
     - target: {fileID: 3803102326549632336, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
       propertyPath: ObservedComponents.Array.data[1]
       value: 
-      objectReference: {fileID: 119013065}
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497791631823777487, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
+      propertyPath: m_TargetTeam
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
---- !u!114 &119013065 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9115667936934947569, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}
-  m_PrefabInstance: {fileID: 119013064}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &119013066 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7497791631823777487, guid: 710d82e13ef8e214cb26ce0d60e4c7be, type: 3}

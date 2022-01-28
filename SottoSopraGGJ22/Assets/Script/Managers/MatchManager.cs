@@ -60,8 +60,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            ETeam WinnerTeam = i_Team == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, WinnerTeam);
+            m_PhotonView.RPC("GameOver", RpcTarget.AllBuffered, i_Team);
         }
     }
     
@@ -77,7 +76,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
             if (VictoryLabel != null)
             {
-                string playerName = i_WinnerTeam == ETeam.Team1 ? "Player 2" : "Player 1";
+                string playerName = i_WinnerTeam == ETeam.Team1 ? "Pear" : "Doors";
                 VictoryLabel.text = $"{playerName} Wins";
             }
         }
