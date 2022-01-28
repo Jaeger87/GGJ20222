@@ -351,6 +351,11 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private void OnGroundHit(Collider2D i_Hit)
     {
+        if (!m_bIsGrounded)
+        {
+            m_Animator.Play("Ground");
+        }
+        
         m_bIsGrounded = true;
         m_bIsDashing = false;
         m_bHasDash = true;
