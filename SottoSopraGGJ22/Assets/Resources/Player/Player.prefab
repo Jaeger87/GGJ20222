@@ -114,7 +114,7 @@ MonoBehaviour:
   AirMovementSpeed: 6
   JumpForce: 5.5
   DashForce: 15
-  DashDeltaTime: 0.2
+  DashDeltaTime: 0.1
   JumpDownCollisionDisableTime: 0.5
   HeadCheck: {fileID: 7666559899030523456}
   FloorCheck: {fileID: 1896252833330142399}
@@ -134,6 +134,7 @@ MonoBehaviour:
   m_MapLimitRight: 8.5
   m_MapLimitTop: 4.6
   m_MapLimitBottom: -4.6
+  DashParticles: {fileID: 180820, guid: a07608802ac497743a7f19f6633fdd70, type: 3}
 --- !u!114 &71214289315375558
 MonoBehaviour:
   m_ObjectHideFlags: 0

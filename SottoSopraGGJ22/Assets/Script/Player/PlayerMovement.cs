@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using Photon.Pun;
 using Script;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour, IPunObservable
@@ -67,6 +69,10 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     
     [SerializeField] 
     private float m_MapLimitBottom = 0;
+
+    [Header("Effect")]
+    [SerializeField]
+    private GameObject DashParticles = null;
     
     private Rigidbody2D m_Rigidbody = null;
 
@@ -156,7 +162,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             if (PlayerDamage.CheckHit())
             {
                 OnHit();
-                m_bIsDashing = false;
+                // m_bIsDashing = false;
             }
         }
 
@@ -248,7 +254,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     
     private void OnDashEnter()
     {
-        if (!m_bHasDash)
+        if (!DashAvailable || m_bIsGrounded)
         {
             return;
         }
@@ -264,7 +270,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private void OnHit()
     {
-        m_Animator.SetBool("Dash", true);
+        // m_Animator.SetBool("Dash", true);
     }
 
     public void AddJumpToRigidBody()
@@ -355,6 +361,11 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             m_Animator.Play("Ground");
         }
+
+        if (m_bIsDashing)
+        {
+            CreateDashEffect();
+        }
         
         m_bIsGrounded = true;
         m_bIsDashing = false;
@@ -365,6 +376,23 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
         m_Controller.OnCanJumpOverPlatform(false);
         m_Controller.OnCanJumpDownPlatform(m_bCanJumpDownPlatform);
+    }
+
+    private void CreateDashEffect()
+    {
+        var hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, FloorMask);
+
+        if (hit != null)
+        {
+            var go = PhotonNetwork.Instantiate(DashParticles.gameObject.name, hit.point, DashParticles.transform.rotation);
+            StartCoroutine(DestroyGO(go, 1f));
+        }
+    }
+
+    private IEnumerator DestroyGO(GameObject go, float after)
+    {
+        yield return new WaitForSeconds(after);
+        PhotonNetwork.Destroy(go);
     }
 
     private void FixedUpdate()
