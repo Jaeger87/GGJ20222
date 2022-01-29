@@ -9,8 +9,22 @@ public class LobbyUI :  MonoBehaviourPunCallbacks
 {
     [SerializeField] private UIElement_RoomItem RoomItemPrefab;
     [SerializeField] private Transform m_RoomListContent;
+    [SerializeField] private GameObject m_CreditsPage = null; 
+    
+    
     private Dictionary<string, RoomInfo> cachedRoomList = new Dictionary<string, RoomInfo>();
     public UnityEvent<string> onRoomClick = new UnityEvent<string>();
+
+    public void OpenCredits()
+    {
+        m_CreditsPage.SetActive(true);
+    }
+    
+    public void CloseCredits()
+    {
+        m_CreditsPage.SetActive(false);
+    }
+    
     private void UpdateCachedRoomList(List<RoomInfo> roomList)
     {
         for(int i=0; i<roomList.Count; i++)
