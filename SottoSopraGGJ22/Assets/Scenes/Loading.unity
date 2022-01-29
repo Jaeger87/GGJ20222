@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &655480671 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3489121203043281964, guid: 195b2242b75325a44a6cc4a437571b10, type: 3}
+  m_PrefabInstance: {fileID: 7153714847487699169}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1f6cbffc2654345a69234f995c3efa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &997537743
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,6 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcecc519d366b8c4493ecb5ec8018398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LoadingUI: {fileID: 655480671}
 --- !u!4 &2006014603
 Transform:
   m_ObjectHideFlags: 0
