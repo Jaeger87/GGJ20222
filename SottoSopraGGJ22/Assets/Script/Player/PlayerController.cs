@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -30,7 +31,12 @@ public class PlayerController : MonoBehaviour
     private PlayerMovement m_PlayerMovement;
      
     private bool m_bOffline => !PhotonNetwork.IsConnected;
-    
+
+    // private void Start()
+    // {
+    //     Time.timeScale = 5f;
+    // }
+
     public void SetTeam(ETeam i_Team)
     {
         if (m_bOffline)

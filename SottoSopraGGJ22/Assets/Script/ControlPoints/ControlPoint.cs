@@ -51,7 +51,14 @@ public class ControlPoint : MonoBehaviour
             if (collision.gameObject.CompareTag("Enemy"))
             {
                 collision.gameObject.GetComponent<EnemyController>().Die();
-                m_PhotonView.RPC("Damage", RpcTarget.AllBuffered);
+                if (m_bOffline)
+                {
+                    Damage();
+                }
+                else
+                {
+                    m_PhotonView.RPC("Damage", RpcTarget.AllBuffered);
+                }
             }
         }
     }
@@ -80,7 +87,7 @@ public class ControlPoint : MonoBehaviour
         }
 
         Vector3 LocalScale = HealthBarFill.localScale;
-        LocalScale.x = (float)m_CurrentLife / Life;
+        LocalScale.x = 1 - (float)m_CurrentLife / Life;
         HealthBarFill.localScale = LocalScale;
     }
 }

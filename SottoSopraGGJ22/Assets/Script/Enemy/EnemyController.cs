@@ -194,6 +194,7 @@ public class EnemyController : MonoBehaviour
 
         if (m_bOffline)
         {
+            ChangeTeam(m_Rigidbody.position);
             return;
         }
 
@@ -219,7 +220,7 @@ public class EnemyController : MonoBehaviour
         m_Rigidbody.velocity = Vector2.zero;
         Vector2 LocalPosition = diePosition;
 
-        float arenaXSize = MatchManager.GetMatchManager().ArenaSize.position.x;
+        float arenaXSize = MatchManager.ArenaSize.position.x;
         float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
         LocalPosition.x = arenaXSizeSigned + diePosition.x;
 
