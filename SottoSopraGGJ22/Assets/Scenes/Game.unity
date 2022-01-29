@@ -716,6 +716,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: ControlPointPrefabTeam1
+      value: 
+      objectReference: {fileID: 2535743847120580317, guid: c562e35a92f05744c823dfb29aa276f4, type: 3}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
+      propertyPath: ControlPointPrefabTeam2
+      value: 
+      objectReference: {fileID: 2900285069771782478, guid: 4ebc0f54be457f140a54f7049511d04b, type: 3}
+    - target: {fileID: 4302738216058999671, guid: ec9f35a1c5c381741986b3aff193ac11, type: 3}
       propertyPath: ControlPointLeftSpawnPoint
       value: 
       objectReference: {fileID: 1795267328}

@@ -9,7 +9,7 @@ public class PlayerDamage : MonoBehaviour
     private Transform DamageCheckPoint;
 
     [SerializeField]
-    private Vector2 DamageCheckRange = new Vector2(0.1f, 0.1f);
+    private Vector2 DamageCheckRange = new Vector2(0.5f, 0.1f);
 
     [SerializeField]
     private LayerMask HitLayer;
@@ -21,19 +21,24 @@ public class PlayerDamage : MonoBehaviour
             return false;
         }
         
-        Collider2D Hit = Physics2D.OverlapBox(DamageCheckPoint.position, DamageCheckRange, 0, HitLayer);
-        if (Hit != null)
+        Collider2D[] Hits = Physics2D.OverlapBoxAll(DamageCheckPoint.position, DamageCheckRange, 0, HitLayer);
+        if (Hits.Length > 0)
         {
-            EnemyDamage Enemy = Hit.GetComponent<EnemyDamage>();
-
-            if (Enemy == null)
+            bool bHitted = false;
+            foreach (var Hit in Hits)
             {
-                return false;
+                EnemyDamage Enemy = Hit.GetComponent<EnemyDamage>();
+
+                if (Enemy == null)
+                {
+                    continue;
+                }
+
+                bHitted = true;
+                // hitted an enemy
+                Enemy.Hit();
             }
-            
-            // hitted an enemy
-            Enemy.Hit();
-            return true;
+            return bHitted;
         }
 
         return false;

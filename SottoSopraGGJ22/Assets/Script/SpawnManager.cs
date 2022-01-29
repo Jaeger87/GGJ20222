@@ -15,7 +15,10 @@ public class SpawnManager : MonoBehaviour
     private GameObject EnemyPrefabRight;
     
     [SerializeField]
-    private GameObject ControlPointPrefab;
+    private GameObject ControlPointPrefabTeam1;
+    
+    [SerializeField]
+    private GameObject ControlPointPrefabTeam2;
     
     [SerializeField]
     private Transform Team1SpawnPoint;
@@ -76,11 +79,11 @@ public class SpawnManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameObject ControlPointLeft = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+            GameObject ControlPointLeft = PhotonNetwork.Instantiate(ControlPointPrefabTeam1.name,
                 ControlPointLeftSpawnPoint.position,
                 Quaternion.identity);
 
-            GameObject ControlPointRight = PhotonNetwork.Instantiate(ControlPointPrefab.name,
+            GameObject ControlPointRight = PhotonNetwork.Instantiate(ControlPointPrefabTeam2.name,
                 ControlPointRightSpawnPoint.position,
                 Quaternion.identity);
             

@@ -18,9 +18,9 @@ public class MatchManager : MonoBehaviourPunCallbacks
     
     [SerializeField] private Transform m_ArenaSize;
 
-    public Transform ArenaSize
+    public static Transform ArenaSize
     {
-        get => m_ArenaSize;
+        get => Instance.m_ArenaSize;
     }
 
     // Start is called before the first frame update

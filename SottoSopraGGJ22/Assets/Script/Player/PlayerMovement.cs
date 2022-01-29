@@ -264,7 +264,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private void OnHit()
     {
-        print("Player should hit");
+        m_Animator.SetBool("Dash", true);
     }
 
     public void AddJumpToRigidBody()
