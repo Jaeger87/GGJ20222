@@ -840,9 +840,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: e599a308496bb694bbda6f394e57f953, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c1b3d46874706e848a6ca20ae976ce6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
@@ -946,9 +946,14 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: Dash
+  - Type: 9
+    SynchronizeType: 0
+    Name: Ground
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
+  - SynchronizeType: 0
+    LayerIndex: 1
 --- !u!1 &6651998141421340018
 GameObject:
   m_ObjectHideFlags: 0
