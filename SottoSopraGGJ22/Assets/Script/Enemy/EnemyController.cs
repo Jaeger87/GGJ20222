@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
@@ -173,6 +172,7 @@ public class EnemyController : MonoBehaviour
                 m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
                 m_Movement = EnemyMovement.Stairs;
                 m_Rigidbody.isKinematic = true;
+                
             }
             else if (m_Movement == EnemyMovement.Stairs)
             {
@@ -217,21 +217,28 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AfterDeath(Vector3 diePosition)
     {
+        m_Rigidbody.isKinematic = true;
         m_Rigidbody.velocity = Vector2.zero;
+        m_bIsDead = true;
+        yield return new WaitForSeconds(0.5f);
+        m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        
+        
+        
         Vector2 LocalPosition = diePosition;
-
         float arenaXSize = MatchManager.ArenaSize.position.x;
         float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
         LocalPosition.x = arenaXSizeSigned + diePosition.x;
-
-        SpawnSprite.transform.position = LocalPosition;
-        SpawnSprite.SetActive(true);
-        yield return new WaitForSeconds(3f);
-        SpawnSprite.SetActive(false);
         transform.localPosition = LocalPosition;
-
-        m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
+        
         SetAnimatorLayer();
+        
+        m_Animator.SetBool("Respawn", true);
+        yield return new WaitForSeconds(3f);
+        m_Animator.SetBool("Respawn", false);
+
+        
+        
 
         m_CurrentMovementSpeed += MovementDeltaImprovement;
         m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
