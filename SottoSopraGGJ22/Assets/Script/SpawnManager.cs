@@ -114,8 +114,11 @@ public class SpawnManager : MonoBehaviour
     {
         SpawnPlayers();
         SpawnEnemy();
+        
         m_bGameStarted = true;
         m_fTimeToNextSpawn = SpawnEnemyDeltaTime;
+
+        MatchManager.GameStarted();
 
         if (GameLoadingUI != null)
         {

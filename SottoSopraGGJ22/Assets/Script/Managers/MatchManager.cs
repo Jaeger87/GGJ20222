@@ -18,6 +18,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
     
     [SerializeField] private Transform m_ArenaSize;
 
+    private bool m_bIsGameStarted = false;
+
+    public static bool IsGameStarted => Instance.m_bIsGameStarted;
+    
     public static Transform ArenaSize
     {
         get => Instance.m_ArenaSize;
@@ -110,5 +114,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
         
         SceneManager.LoadScene("Lobby");
+    }
+
+    public static void GameStarted()
+    {
+        Instance.m_bIsGameStarted = true;
     }
 }

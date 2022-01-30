@@ -999,7 +999,7 @@ PrefabInstance:
       objectReference: {fileID: 793357991474352856}
     - target: {fileID: 1300766622019416093, guid: fa459f58b84104728ae9beff60c4e0a2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BackToMainMenu
+      value: TogglePauseMenu
       objectReference: {fileID: 0}
     - target: {fileID: 1300766622019416093, guid: fa459f58b84104728ae9beff60c4e0a2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName

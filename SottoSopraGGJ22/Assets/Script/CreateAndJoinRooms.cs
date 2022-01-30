@@ -8,6 +8,9 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 {
 
     [SerializeField]
+    private GameObject RandomFailedLog = null;
+    
+    [SerializeField]
     private GameObject LoadingUI = null;
     
     [SerializeField]
@@ -60,6 +63,11 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         {
             return;
         }
+        
+        if (RandomFailedLog != null)
+        {
+            RandomFailedLog.SetActive(true);
+        }
 
         SaveName();
         
@@ -73,6 +81,11 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     
     public void JoinRoom(string i_RoomID)
     {
+        if (RandomFailedLog != null)
+        {
+            RandomFailedLog.SetActive(true);
+        }
+        
         SaveName();
         
         PhotonNetwork.JoinOrCreateRoom(i_RoomID.ToLower(), GetRoomConfig(), TypedLobby.Default);
@@ -88,10 +101,15 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         SaveName();
 
         PhotonNetwork.JoinRandomRoom();
-        
+
         if (LoadingUI != null)
         {
             LoadingUI.SetActive(true);
+        }
+
+        if (RandomFailedLog != null)
+        {
+            RandomFailedLog.SetActive(false);
         }
     }
 
@@ -108,14 +126,34 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel("Game");
+        if (RandomFailedLog != null)
+        {
+            RandomFailedLog.SetActive(false);
+        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         base.OnJoinRoomFailed(returnCode, message);
+        
         if (LoadingUI != null)
         {
             LoadingUI.SetActive(false);
+        }
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        base.OnJoinRandomFailed(returnCode, message);
+        
+        if (LoadingUI != null)
+        {
+            LoadingUI.SetActive(false);
+        }
+        
+        if (RandomFailedLog != null)
+        {
+            RandomFailedLog.SetActive(true);
         }
     }
 }
