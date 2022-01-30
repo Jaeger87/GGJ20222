@@ -18,6 +18,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
     
     [SerializeField] private Transform m_ArenaSize;
 
+    private bool m_bIsGameStarted = false;
+
+    public static bool IsGameStarted => Instance.m_bIsGameStarted;
+    
     public static Transform ArenaSize
     {
         get => Instance.m_ArenaSize;
@@ -65,7 +69,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
     }
     
     [PunRPC]
-    public void GameOver(ETeam i_WinnerTeam)
+    public void GameOver(ETeam i_LoserTeam)
     {
         m_Spawnmanager.EndGame();
         //todo: GameOver, decidere cosa mostrare
@@ -76,8 +80,8 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
             if (VictoryLabel != null)
             {
-                string playerName = i_WinnerTeam == ETeam.Team1 ? "Pear" : "Doors";
-                VictoryLabel.text = $"{playerName} Wins";
+                string playerName = i_LoserTeam == ETeam.Team1 ? "Doors" : "Pears";
+                VictoryLabel.text = $"{playerName} get hacked!";
             }
         }
 
@@ -110,5 +114,10 @@ public class MatchManager : MonoBehaviourPunCallbacks
         }
         
         SceneManager.LoadScene("Lobby");
+    }
+
+    public static void GameStarted()
+    {
+        Instance.m_bIsGameStarted = true;
     }
 }
