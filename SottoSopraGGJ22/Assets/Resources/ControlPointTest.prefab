@@ -151,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthBarFill: {fileID: 8952229779152076989}
   m_Team: 0
-  Life: 10
+  Life: 1
   m_Animator: {fileID: 7415193476702266344}
   m_AudioSource: {fileID: 7814936573844805124}
   HitSound: {fileID: 8300000, guid: c05ddfa3123b91549829fccbf2393e5d, type: 3}
