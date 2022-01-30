@@ -246,7 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthBarFill: {fileID: 6063495480029830187}
   m_Team: 0
-  Life: 1
+  Life: 10
   m_Animator: {fileID: 5688441754289979262}
   m_AudioSource: {fileID: 4930689416167393938}
   HitSound: {fileID: 8300000, guid: c05ddfa3123b91549829fccbf2393e5d, type: 3}
