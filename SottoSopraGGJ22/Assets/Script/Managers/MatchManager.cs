@@ -58,6 +58,8 @@ public class MatchManager : MonoBehaviourPunCallbacks
     private void StartGame()
     {
         m_Spawnmanager.StartGame();
+        
+        MusicManager.PlayGameMusic();
     }
 
     public void GameEnded(ETeam i_Team)
@@ -112,6 +114,8 @@ public class MatchManager : MonoBehaviourPunCallbacks
         {
             yield return null;
         }
+        
+        MusicManager.PlayLobbyMusic();
         
         SceneManager.LoadScene("Lobby");
     }
