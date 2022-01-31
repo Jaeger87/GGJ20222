@@ -99,27 +99,13 @@ public class EnemyController : MonoBehaviour
     private void FixedUpdate()
     {
         if (m_bIsDead)
-        {
             return;
-        }
-
         if (m_Rigidbody == null)
-        {
             return;
-        }
-        
         if (m_Movement == EnemyMovement.Floor)
-        {
-            m_Rigidbody.velocity = new Vector2(
-                (m_bLookingRight ? transform.right : -transform.right).x * m_CurrentMovementSpeed,
-                m_Rigidbody.velocity.y);
-        }
+            m_Rigidbody.velocity = new Vector2((m_bLookingRight ? transform.right : -transform.right).x * m_CurrentMovementSpeed, m_Rigidbody.velocity.y);
         else
-        {
-            m_Rigidbody.velocity = new Vector2(
-                0,
-                m_CurrentMovementSpeed * m_VerticalDirection);
-        }
+            m_Rigidbody.velocity = new Vector2(0, m_CurrentMovementSpeed * m_VerticalDirection);
     }
 
     private void Flip()
@@ -134,25 +120,15 @@ public class EnemyController : MonoBehaviour
     private void CheckCollisions()
     {
         if (m_bIsDead)
-        {
             return;
-        }
-
         if (m_Movement == EnemyMovement.Stairs)
-        {
             return;
-        }
-
         if (FrontWallCheck != null)
         {
             if (Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, WallMask))
-            {
                 m_bIsCollidingForward = true;
-            }
             else
-            {
                 m_bIsCollidingForward = false;
-            }
         }
     }
 
@@ -163,35 +139,35 @@ public class EnemyController : MonoBehaviour
 
     public void OnStairsEnter(bool i_bIsStartPoint, Stairs.EStairDirection i_Direction)
     {
+        if (m_Movement == EnemyMovement.Floor)
+            OnStairsEnterFloor(i_bIsStartPoint, i_Direction);
+        else if (m_Movement == EnemyMovement.Stairs)
+            OnStairsExitFloor(i_bIsStartPoint);
+    }
 
-            if (m_Movement == EnemyMovement.Floor)
-            {
-                if (!i_bIsStartPoint)
-                    return;
-                m_Rigidbody.velocity = Vector2.zero;
-                m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
-                m_Movement = EnemyMovement.Stairs;
-                m_Rigidbody.isKinematic = true;
-                
-            }
-            else if (m_Movement == EnemyMovement.Stairs)
-            {
-                if (i_bIsStartPoint)
-                    return;
-                m_Movement = EnemyMovement.Floor;
-                m_Rigidbody.isKinematic = false;
-                Flip();
-            }
-        
+    private void OnStairsEnterFloor(bool i_bIsStartPoint, Stairs.EStairDirection i_Direction)
+    {
+        if (!i_bIsStartPoint)
+            return;
+        m_Rigidbody.velocity = Vector2.zero;
+        m_VerticalDirection = i_Direction == Stairs.EStairDirection.Down ? -1 : 1;
+        m_Movement = EnemyMovement.Stairs;
+        m_Rigidbody.isKinematic = true;
+    }
+
+    private void OnStairsExitFloor(bool i_bIsStartPoint)
+    {
+        if (i_bIsStartPoint)
+            return;
+        m_Movement = EnemyMovement.Floor;
+        m_Rigidbody.isKinematic = false;
+        Flip();
     }
 
     public void OnHit()
     {
         if (m_bIsDead)
-        {
             return;
-        }
-
         if (m_bOffline)
         {
             ChangeTeam(m_Rigidbody.position);
@@ -222,24 +198,20 @@ public class EnemyController : MonoBehaviour
         m_bIsDead = true;
         yield return new WaitForSeconds(0.5f);
         m_TargetTeam = m_TargetTeam == ETeam.Team1 ? ETeam.Team2 : ETeam.Team1;
-        
-        
-        
         Vector2 LocalPosition = diePosition;
         float arenaXSize = MatchManager.ArenaSize.position.x;
         float arenaXSizeSigned = diePosition.x > 0 ? arenaXSize * -1 : arenaXSize;
         LocalPosition.x = arenaXSizeSigned + diePosition.x;
         transform.localPosition = LocalPosition;
-        
         SetAnimatorLayer();
-        
         m_Animator.SetBool("Respawn", true);
         yield return new WaitForSeconds(3f);
+        AfterRespawnPause();
+    }
+
+    private void AfterRespawnPause()
+    {
         m_Animator.SetBool("Respawn", false);
-
-        
-        
-
         m_CurrentMovementSpeed += MovementDeltaImprovement;
         m_Animator.speed = m_CurrentMovementSpeed / MovementSpeed;
         m_bIsDead = false;

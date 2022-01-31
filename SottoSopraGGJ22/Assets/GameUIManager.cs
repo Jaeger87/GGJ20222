@@ -22,13 +22,9 @@ public class GameUIManager : MonoBehaviour
     public void TogglePauseMenu()
     {
         if (!MatchManager.IsGameStarted)
-        {
             return;
-        }
-        
+
         if (m_PauseMenu != null)
-        {
             m_PauseMenu.gameObject.SetActive(!m_PauseMenu.gameObject.activeSelf);
-        }
     }
 }

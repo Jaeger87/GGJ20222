@@ -33,16 +33,12 @@ public class LoreManager : MonoBehaviour
     {
         if(m_SlideIndex >= 0) 
             m_Slides[m_SlideIndex].SetActive(false);
-
         m_SlideIndex++;
-
-        if (m_SlideIndex < m_Slides.Length)
-        {
+        if (m_SlideIndex < m_Slides.Length) {
             m_Slides[m_SlideIndex].SetActive(true);
             m_Animators[m_SlideIndex].SetBool("Entered", true);
         }
-        else
-        {
+        else {
             m_Slides[m_Slides.Length - 1].SetActive(false);
             SceneManager.LoadScene("Loading");
         }

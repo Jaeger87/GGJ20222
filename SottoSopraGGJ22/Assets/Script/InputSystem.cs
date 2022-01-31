@@ -77,28 +77,14 @@ namespace Script
         {
             switch (m_ActionStatus[EAction.Dash])
             {
-                case EActionStatus.Enter:
-                case EActionStatus.Update:
-                    if (Input.GetAxisRaw("Fire2") != 0)
-                    {
-                        m_ActionStatus[EAction.Dash] = EActionStatus.Update;
-                        OnDashUpdate?.Invoke();
-                    }
-                    else
-                    {
-                        m_ActionStatus[EAction.Dash] = EActionStatus.Exit;
-                        OnDashExit?.Invoke();
-                    }
+                case EActionStatus.Enter: case EActionStatus.Update:
+                    HandleDashCaseEnterUpdate();
                     break;
                 case EActionStatus.Exit:
                     m_ActionStatus[EAction.Dash] = EActionStatus.None;
                     break;
                 case EActionStatus.None:
-                    if (Input.GetAxisRaw("Fire2") != 0)
-                    {
-                        m_ActionStatus[EAction.Dash] = EActionStatus.Enter;
-                        OnDashEnter?.Invoke();
-                    }
+                    HandleDashCaseNone();
                     break;
                 default:
                     m_ActionStatus[EAction.Jump] = EActionStatus.None; 
@@ -106,41 +92,73 @@ namespace Script
             }
         }
 
+
+        private void HandleDashCaseEnterUpdate()
+        {
+            if (Input.GetAxisRaw("Fire2") != 0)
+            {
+                m_ActionStatus[EAction.Dash] = EActionStatus.Update;
+                OnDashUpdate?.Invoke();
+            }
+            else
+            {
+                m_ActionStatus[EAction.Dash] = EActionStatus.Exit;
+                OnDashExit?.Invoke();
+            }
+        }
+
+        private void HandleDashCaseNone()
+        {
+            if (Input.GetAxisRaw("Fire2") != 0)
+            {
+                m_ActionStatus[EAction.Dash] = EActionStatus.Enter;
+                OnDashEnter?.Invoke();
+            }
+        }
         private void HandleMoveHorizontal()
         {
             float Axis = Input.GetAxisRaw("Horizontal");
             bool bMoving = Axis != 0f;
-            
             EMoveDirection Direction = Axis < 0 ? EMoveDirection.Left : EMoveDirection.Right;
-            
-            switch (m_ActionStatus[EAction.MoveHorizontal])
-            {
+            HandleMoveHorizontalSwitch(bMoving, Direction, Axis);
+        }
+
+        private void HandleMoveHorizontalSwitch(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            switch (m_ActionStatus[EAction.MoveHorizontal]) {
                 case EActionStatus.Enter:
                 case EActionStatus.Update:
-                    if (bMoving)
-                    {
-                        m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Update;
-                        OnMoveHorizontalUpdate?.Invoke(Direction, Axis);
-                    }
-                    else
-                    {
-                        m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Exit;
-                        OnMoveHorizontalExit?.Invoke(Direction, Axis);
-                    }
+                    HandleMoveHorizontalEnterUpdate(bMoving, Direction, Axis);
                     break;
                 case EActionStatus.Exit:
                     m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.None;
                     break;
                 case EActionStatus.None:
-                    if (bMoving)
-                    {
-                        m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Enter;
-                        OnMoveHorizontalEnter?.Invoke(Direction, Axis);
-                    }
+                    HandleMoveHorizontalNone(bMoving, Direction, Axis);
                     break;
                 default:
                     m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.None; 
                     break;
+            }
+        }
+
+        private void HandleMoveHorizontalEnterUpdate(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            if (bMoving) {
+                m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Update;
+                OnMoveHorizontalUpdate?.Invoke(Direction, Axis);
+            }
+            else {
+                m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Exit;
+                OnMoveHorizontalExit?.Invoke(Direction, Axis);
+            }
+        }
+
+        private void HandleMoveHorizontalNone(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            if (bMoving) {
+                m_ActionStatus[EAction.MoveHorizontal] = EActionStatus.Enter;
+                OnMoveHorizontalEnter?.Invoke(Direction, Axis);
             }
         }
         private void HandleMoveVertical()
@@ -148,31 +166,20 @@ namespace Script
             float Axis = Input.GetAxisRaw("Vertical");
             bool bMoving = Axis != 0f;
             EMoveDirection Direction = Axis < 0 ? EMoveDirection.Down : EMoveDirection.Up;
-            
-            switch (m_ActionStatus[EAction.MoveVertical])
-            {
-                case EActionStatus.Enter:
-                case EActionStatus.Update:
-                    if (bMoving)
-                    {
-                        m_ActionStatus[EAction.MoveVertical] = EActionStatus.Update;
-                        OnMoveVerticalUpdate?.Invoke(Direction, Axis);
-                    }
-                    else
-                    {
-                        m_ActionStatus[EAction.MoveVertical] = EActionStatus.Exit;
-                        OnMoveVerticalExit?.Invoke(Direction, Axis);
-                    }
+            HandleMoveVerticalSwitch(bMoving, Direction, Axis);
+        }
+
+        private void HandleMoveVerticalSwitch(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            switch (m_ActionStatus[EAction.MoveVertical]) {
+                case EActionStatus.Enter: case EActionStatus.Update:
+                    HandleMoveVerticalEnterUpdate(bMoving, Direction, Axis);
                     break;
                 case EActionStatus.Exit:
                     m_ActionStatus[EAction.MoveVertical] = EActionStatus.None;
                     break;
                 case EActionStatus.None:
-                    if (bMoving)
-                    {
-                        m_ActionStatus[EAction.MoveVertical] = EActionStatus.Enter;
-                        OnMoveVerticalEnter?.Invoke(Direction, Axis);
-                    }
+                    HandleMoveVerticalNone(bMoving, Direction, Axis);
                     break;
                 default:
                     m_ActionStatus[EAction.MoveVertical] = EActionStatus.None; 
@@ -180,35 +187,61 @@ namespace Script
             }
         }
 
+        private void HandleMoveVerticalEnterUpdate(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            if (bMoving) {
+                m_ActionStatus[EAction.MoveVertical] = EActionStatus.Update;
+                OnMoveVerticalUpdate?.Invoke(Direction, Axis);
+            }
+            else {
+                m_ActionStatus[EAction.MoveVertical] = EActionStatus.Exit;
+                OnMoveVerticalExit?.Invoke(Direction, Axis);
+            }
+        }
+
+        private void HandleMoveVerticalNone(bool bMoving, EMoveDirection Direction, float Axis)
+        {
+            if (bMoving)
+            {
+                m_ActionStatus[EAction.MoveVertical] = EActionStatus.Enter;
+                OnMoveVerticalEnter?.Invoke(Direction, Axis);
+            }
+        }
+
         private void HandleJump()
         {
-            switch (m_ActionStatus[EAction.Jump])
-            {
-                case EActionStatus.Enter:
-                case EActionStatus.Update:
-                    if (Input.GetAxisRaw("Fire1") != 0)
-                    {
-                        m_ActionStatus[EAction.Jump] = EActionStatus.Update;
-                        OnJumpUpdate?.Invoke();
-                    }
-                    else
-                    {
-                        m_ActionStatus[EAction.Jump] = EActionStatus.Exit;
-                        OnJumpExit?.Invoke();
-                    }
+            switch (m_ActionStatus[EAction.Jump]) {
+                case EActionStatus.Enter: case EActionStatus.Update:
+                    HandleJumpEnterUpdate();
                     break;
                 case EActionStatus.Exit:
                     m_ActionStatus[EAction.Jump] = EActionStatus.None;
                     break;
                 case EActionStatus.None:
-                    if (Input.GetAxisRaw("Fire1") != 0)
-                    {
-                        m_ActionStatus[EAction.Jump] = EActionStatus.Enter;
-                        OnJumpEnter?.Invoke();
-                    }
+                    HandleJumpNone();
                     break;
                 default:
                     m_ActionStatus[EAction.Jump] = EActionStatus.None; break;
+            }
+        }
+
+        private void HandleJumpEnterUpdate()
+        {
+            if (Input.GetAxisRaw("Fire1") != 0) {
+                m_ActionStatus[EAction.Jump] = EActionStatus.Update;
+                OnJumpUpdate?.Invoke();
+            }
+            else {
+                m_ActionStatus[EAction.Jump] = EActionStatus.Exit;
+                OnJumpExit?.Invoke();
+            }
+        }
+
+        private void HandleJumpNone()
+        {
+            if (Input.GetAxisRaw("Fire1") != 0) {
+                m_ActionStatus[EAction.Jump] = EActionStatus.Enter;
+                OnJumpEnter?.Invoke();
             }
         }
     }
