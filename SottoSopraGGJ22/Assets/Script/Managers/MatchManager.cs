@@ -31,20 +31,13 @@ public class MatchManager : MonoBehaviourPunCallbacks
     void Awake()
     {
         if(Instance == null)
-        {
             Instance = this;
-        }
         else
-        {
             Destroy(this);
-        }
-
         m_PhotonView = GetComponent<PhotonView>();
-
         if (!PhotonNetwork.IsMasterClient)
-        {
             m_PhotonView.RPC("StartGame", RpcTarget.AllBuffered);
-        }
+        
     }
 
     public static MatchManager GetMatchManager()
@@ -58,7 +51,6 @@ public class MatchManager : MonoBehaviourPunCallbacks
     private void StartGame()
     {
         m_Spawnmanager.StartGame();
-        
         MusicManager.PlayGameMusic();
     }
 
@@ -74,25 +66,18 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public void GameOver(ETeam i_LoserTeam)
     {
         m_Spawnmanager.EndGame();
-        //todo: GameOver, decidere cosa mostrare
-
         if (VictoryPanel != null)
         {
             VictoryPanel.SetActive(true);
-
             if (VictoryLabel != null)
             {
                 string playerName = i_LoserTeam == ETeam.Team1 ? "Doors" : "Pears";
                 VictoryLabel.text = $"{playerName} get hacked!";
             }
         }
-
         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
         foreach (var enemy in enemies)
-        {
             Destroy(enemy);
-        }
     }
 
     public static void LeaveRoom()
@@ -107,14 +92,9 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
     private static IEnumerator PhotonLeaveRoom()
     {
-
         PhotonNetwork.LeaveRoom();
-
         while (PhotonNetwork.InRoom)
-        {
             yield return null;
-        }
-        
         MusicManager.PlayLobbyMusic();
         
         SceneManager.LoadScene("Lobby");

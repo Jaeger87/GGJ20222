@@ -17,9 +17,7 @@ public class MusicManager : MonoBehaviour
     private void Awake()
     {
         if (Instance != null && Instance != this)
-        {
             Destroy(this);
-        }
 
         Instance = this;
         
@@ -33,21 +31,23 @@ public class MusicManager : MonoBehaviour
 
     public static void PlayLobbyMusic()
     {
-        if (Instance.m_AudioSource != null)
-        {
-            Instance.m_AudioSource.Stop();
-            Instance.m_AudioSource.clip = Instance.LobbyMusic;
-            Instance.m_AudioSource.Play();
-        }    
+        if (Instance != null)
+            if (Instance.m_AudioSource != null)
+            {
+                Instance.m_AudioSource.Stop();
+                Instance.m_AudioSource.clip = Instance.LobbyMusic;
+                Instance.m_AudioSource.Play();
+            }
     }
     
     public static void PlayGameMusic()
     {
-        if (Instance.m_AudioSource != null)
-        {
-            Instance.m_AudioSource.Stop();
-            Instance.m_AudioSource.clip = Instance.GameMusic;
-            Instance.m_AudioSource.Play();
-        }
+        if (Instance != null)
+            if (Instance.m_AudioSource != null)
+            {
+                Instance.m_AudioSource.Stop();
+                Instance.m_AudioSource.clip = Instance.GameMusic;
+                Instance.m_AudioSource.Play();
+            }
     }
 }

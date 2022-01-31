@@ -26,25 +26,18 @@ public class Stairs : MonoBehaviour
     private void Update()
     {
         Collider2D Hit = Physics2D.OverlapBox(StartPoint.position, m_CheckSize, 0, TargetMask);
-        if (Hit != null)
-        {
+        if (Hit != null) {
             EnemyController Enemy = Hit.gameObject.GetComponent<EnemyController>();
             float distance = Vector3.Distance(StartPoint.position, Hit.transform.position);
             if (Enemy != null && distance < distanceTollerance)
-            {
                 Enemy.OnStairsEnter(true, m_Direction);
-            }
         }
-        
         Hit = Physics2D.OverlapBox(EndPoint.position, m_CheckSize, 0, TargetMask);
-        if (Hit != null)
-        {
+        if (Hit != null) {
             EnemyController Enemy = Hit.gameObject.GetComponent<EnemyController>();
             float distance = Vector3.Distance(EndPoint.position, Hit.transform.position);
             if (Enemy != null && distance < distanceTollerance)
-            {
                 Enemy.OnStairsEnter(false, m_Direction);
-            }
         }
     }
 

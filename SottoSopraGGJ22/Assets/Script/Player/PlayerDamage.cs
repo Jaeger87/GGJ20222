@@ -17,42 +17,31 @@ public class PlayerDamage : MonoBehaviour
     public bool CheckHit()
     {
         if (DamageCheckPoint == null)
-        {
             return false;
-        }
-        
         Collider2D[] Hits = Physics2D.OverlapBoxAll(DamageCheckPoint.position, DamageCheckRange, 0, HitLayer);
         if (Hits.Length > 0)
         {
-            bool bHitted = false;
             foreach (var Hit in Hits)
-            {
-                EnemyDamage Enemy = Hit.GetComponent<EnemyDamage>();
-
-                if (Enemy == null)
-                {
-                    continue;
-                }
-
-                bHitted = true;
-                // hitted an enemy
-                Enemy.Hit();
-            }
-            return bHitted;
+                CheckHitEnemy(Hit);
+            return true;
         }
-
         return false;
     }
 
+    private void CheckHitEnemy(Collider2D Hit)
+    {
+        EnemyDamage Enemy = Hit.GetComponent<EnemyDamage>();
+        if (Enemy == null)
+            return;
+        Enemy.Hit();
+    }
+    
     private void OnDrawGizmos()
     {
         if (DamageCheckPoint == null)
-        {
             return;
-        }
-        
+
         Gizmos.color = Color.red;
-        
         Gizmos.DrawWireCube(DamageCheckPoint.position, DamageCheckRange);
     }
 }
