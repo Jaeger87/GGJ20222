@@ -40,23 +40,17 @@ public class PlayerController : MonoBehaviour
     public void SetTeam(ETeam i_Team)
     {
         if (m_bOffline)
-        {
             return;
-        }
-        
+
         if (m_PhotonView.IsMine)
-        {
             m_PhotonView.RPC("SetupPlayer", RpcTarget.AllBuffered, i_Team);
-        }
     }
     
     public void SendJump()
     {
         if (m_bOffline)
-        {
             return;
-        }
-        
+
         if (m_PhotonView.IsMine)
         {
             m_PhotonView.RPC("AddJumpForce", RpcTarget.AllBuffered);
@@ -109,14 +103,10 @@ public class PlayerController : MonoBehaviour
         m_Team = i_Team;
         
         if (Graphics != null)
-        {
             Graphics.sprite = m_Team == ETeam.Team1 ? Team1Graphics : Team2Graphics;
-        }
 
         if (PlayerInGameUI != null)
-        {
             PlayerInGameUI.SetNameLabelByTeam(i_Team);
-        }
     }
 
     private void Awake()

@@ -47,20 +47,13 @@ public class ControlPoint : MonoBehaviour
         m_Animator.Play("HitAnimationControlPoint");
         m_AudioSource.PlayOneShot(HitSound);
         if (m_bOffline || PhotonNetwork.IsMasterClient)
-        {
-            if (collision.gameObject.CompareTag("Enemy"))
-            {
+            if (collision.gameObject.CompareTag("Enemy")) {
                 collision.gameObject.GetComponent<EnemyController>().Die();
                 if (m_bOffline)
-                {
                     Damage();
-                }
                 else
-                {
                     m_PhotonView.RPC("Damage", RpcTarget.AllBuffered);
-                }
             }
-        }
     }
     
     [PunRPC]
@@ -77,9 +70,7 @@ public class ControlPoint : MonoBehaviour
     private void UpdateHealthBar()
     {
         if (m_CurrentLife < 0)
-        {
             return;
-        }
 
         if (HealthBarFill == null)
         {

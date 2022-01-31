@@ -302,77 +302,57 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private void CheckGround()
     {
         if (FloorCheck != null)
-        {
-            Collider2D Hit = Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask);
-            if(Hit != null)
-            {
-                OnGroundHit(Hit);
-            }
-            else
-            {
-                m_bIsGrounded = false;
-                m_JumpDeltaTime += Time.deltaTime;
-                m_Controller.OnCanJumpDownPlatform(false);
-            }
-        }
-        
+            FloorCheckMethod();
         if (HeadCheck != null)
-        {
-            Collider2D Hit = Physics2D.OverlapBox(HeadCheck.position, m_GroundCheckSize, 0, FloorMask);
-            if(Hit != null)
-            {
-                m_Controller.OnCanJumpOverPlatform(true);
-                m_bCanJumpOverPlatform = true;
-            }
-            else
-            {
-                m_bCanJumpOverPlatform = false;
-            }
-        }
-
+            HeadCheckMethod();
         if (FrontWallCheck != null)
-        {
             if(Physics2D.OverlapBox(FrontWallCheck.position, m_FrontWallCheckSize, 0, WallMask))
-            {
                 m_bHasFrontWall = true;
-            }
             else
-            {
                 m_bHasFrontWall = false;
-            }   
-        }
-
         if (BackWallCheck != null)
-        {
             if(Physics2D.OverlapBox(BackWallCheck.position, m_BackWallCheckSize, 0, WallMask))
-            {
                 m_bHasBackWall = true;
-            }
             else
-            {
                 m_bHasBackWall = false;
-            }   
+    }
+
+    private void FloorCheckMethod()
+    {
+        Collider2D Hit = Physics2D.OverlapBox(FloorCheck.position, m_GroundCheckSize, 0, FloorMask);
+        if(Hit != null)
+            OnGroundHit(Hit);
+        else
+        {
+            m_bIsGrounded = false;
+            m_JumpDeltaTime += Time.deltaTime;
+            m_Controller.OnCanJumpDownPlatform(false);
         }
+    }
+
+    private void HeadCheckMethod()
+    {
+        Collider2D Hit = Physics2D.OverlapBox(HeadCheck.position, m_GroundCheckSize, 0, FloorMask);
+        if(Hit != null)
+        {
+            m_Controller.OnCanJumpOverPlatform(true);
+            m_bCanJumpOverPlatform = true;
+        }
+        else
+            m_bCanJumpOverPlatform = false;
     }
 
     private void OnGroundHit(Collider2D i_Hit)
     {
         if (!m_bIsGrounded)
-        {
             m_Animator.Play("Ground");
-        }
-
         if (m_bIsDashing)
-        {
             CreateDashEffect();
-        }
-        
         m_bIsGrounded = true;
         m_bIsDashing = false;
         m_bHasDash = true;
         m_bIsJumping = false;
         m_JumpDeltaTime = 0f;
-
         m_bCanJumpDownPlatform = i_Hit.CompareTag("Platform") && m_Rigidbody.velocity.y <= 0f;
         m_Controller.OnCanJumpOverPlatform(false);
         m_Controller.OnCanJumpDownPlatform(m_bCanJumpDownPlatform);
@@ -398,14 +378,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private void FixedUpdate()
     {
         if (m_Rigidbody == null)
-        {
             return;
-        }
-
         if(!m_bvaluesReceived)
-        {
             m_Rigidbody.velocity = new Vector2(GetMovementForce(), m_Rigidbody.velocity.y);
-        }
 
         m_bvaluesReceived = false;
     }
@@ -413,14 +388,10 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private float GetMovementForce()
     {
         if (m_bHasFrontWall && m_Direction == InputSystem.EMoveDirection.Right)
-        {
             return 0;
-        }
-        
+
         if (m_bHasBackWall && m_Direction == InputSystem.EMoveDirection.Left)
-        {
             return 0;
-        }
 
         float currentSpeed = m_Rigidbody.velocity.x;
         
@@ -440,9 +411,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
-        {
             stream.SendNext(m_Rigidbody.velocity);
-        }
         else
         {
             //Network player, receive data

@@ -16,9 +16,7 @@ public class PlayerHitHintController : MonoBehaviour
     {
         m_SpriteRender = GetComponent<SpriteRenderer>();
         if (m_SpriteRender != null)
-        {
             m_YSize = GetComponent<SpriteRenderer>().bounds.size.y/2;
-        }
     }
 
     private void Update()
